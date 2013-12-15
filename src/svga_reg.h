@@ -940,7 +940,7 @@ typedef struct SVGAOverlayUnit {
  *    memory must come from the GFB.  The guest is not allowed to
  *    access the memory and doing so will have undefined results.  The
  *    backing store is required to be page aligned and the size is
- *    padded to the next page boundry.  The number of pages is:
+ *    padded to the next page boundary.  The number of pages is:
  *       (bytesPerLine * size.width * 4 + PAGE_SIZE - 1) / PAGE_SIZE
  *
  *    The pitch in the backingStore is required to be at least large

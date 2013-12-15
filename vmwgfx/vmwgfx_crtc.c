@@ -101,7 +101,7 @@ crtc_dpms(xf86CrtcPtr crtc, int mode)
 
 /*
  * Disable outputs and crtcs and drop the scanout reference from
- * scanout pixmaps. This will essentialy free all kms fb allocations.
+ * scanout pixmaps. This will essentially free all kms fb allocations.
  */
 
 void

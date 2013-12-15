@@ -394,7 +394,7 @@ VMWAREProbe(DriverPtr drv, int flags)
                                             VMWAREPciChipsets, NULL, NULL, NULL,
                                             NULL, NULL);
                 if (pScrn) {
-                    VmwareLog(("And even configuration suceeded\n"));
+                    VmwareLog(("And even configuration succeeded\n"));
                     pScrn->driverVersion = VMWARE_DRIVER_VERSION;
                     pScrn->driverName = VMWARE_DRIVER_NAME;
                     pScrn->name = VMWARE_NAME;

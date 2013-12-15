@@ -1537,7 +1537,7 @@ VMWAREScreenInit(SCREEN_INIT_ARGS_DECL)
     }
 
     /*
-     * We explictly add a set of default modes because the X server will
+     * We explicitly add a set of default modes because the X server will
      * not include modes larger than the initial one.
      */
    {
