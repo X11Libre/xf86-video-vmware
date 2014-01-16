@@ -610,9 +610,9 @@ vmwgfx_pix_resize(PixmapPtr pixmap, unsigned int old_pitch,
     }
 
     if (vpix->hw) {
-	if (xa_surface_redefine(vpix->hw, draw->width, draw->height,
-				draw->depth, xa_type_argb,
-				xa_format_unknown, vpix->xa_flags, 1) != 0)
+      if (!vmwgfx_xa_surface_redefine(vpix, vpix->hw, draw->width,
+				      draw->height, draw->depth, xa_type_argb,
+				      xa_format_unknown, vpix->xa_flags, 1))
 	    return FALSE;
     }
 
@@ -1504,7 +1504,8 @@ vmwgfx_scanout_ref(struct vmwgfx_screen_entry  *entry)
 	     * The KMS fb will be a HW surface. Create it, add damage
 	     * and get the handle.
 	     */
-	    if (!vmwgfx_hw_accel_validate(pixmap, 0, XA_FLAG_SCANOUT, 0, NULL))
+	    if (!vmwgfx_hw_accel_validate(pixmap, 0, XA_FLAG_SCANOUT |
+					  XA_FLAG_RENDER_TARGET, 0, NULL))
 		goto out_err;
 	    if (_xa_surface_handle(vpix->hw, &handle, &dummy) != 0)
 		goto out_err;
