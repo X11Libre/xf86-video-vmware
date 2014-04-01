@@ -126,7 +126,7 @@ if test x$BUILD_VMWGFX = xyes; then
 			  [PKG_CHECK_EXISTS([xatracker = 2.0.0],
 	                  [AC_DEFINE([HAVE_XA_2], 1,
                		  [Has version 2 of XA])])],
-			  [],[BUILD_VMWGFX=no])
+			  [BUILD_VMWGFX=no])
 #
 # Check for prime.
 #
