@@ -1158,6 +1158,8 @@ vmwgfx_composite_prepare(struct saa_driver *driver, CARD8 op,
      * and check whether XA can accelerate.
      */
 
+    if (!mask_pix)
+	mask_pict = NULL;
     xa_comp = vmwgfx_xa_setup_comp(vsaa->vcomp, op,
 				   src_pict, mask_pict, dst_pict);
     if (!xa_comp)
