@@ -30,6 +30,7 @@
 #endif
 
 #include "xf86.h"
+#include <xorgVersion.h>
 #include "compiler.h"
 #include "xf86Pci.h"		/* pci */
 #include "vm_device_version.h"
@@ -496,6 +497,10 @@ VMWareDriverFunc(ScrnInfoPtr pScrn,
 			      pScrn->yDpi / 2) / pScrn->yDpi;
       }
       return TRUE;
+#if XORG_VERSION_CURRENT >= XORG_VERSION_NUMERIC(1,15,99,902,0)
+   case SUPPORTS_SERVER_FDS:
+      return TRUE;
+#endif
    default:
       return FALSE;
    }
