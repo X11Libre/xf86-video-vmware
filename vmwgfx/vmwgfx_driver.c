@@ -465,13 +465,13 @@ drv_pre_init(ScrnInfoPtr pScrn, int flags)
 
     pScrn->displayWidth = 640;	       /* default it */
 
-    if (ms->pEnt->location.type != BUS_PCI) {
+    ms->PciInfo = xf86GetPciInfoForEntity(ms->pEnt->index);
+    if (!ms->PciInfo) {
 	xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
 		   "Incorrect bus for device.\n");
 	goto out_err_bus;
     }
 
-    ms->PciInfo = xf86GetPciInfoForEntity(ms->pEnt->index);
     xf86SetPrimInitDone(pScrn->entityList[0]);
 
     ms->hdriver = vmwgfx_hosted_detect();

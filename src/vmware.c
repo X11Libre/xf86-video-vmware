@@ -310,9 +310,6 @@ VMWAREPreInit(ScrnInfoPtr pScrn, int flags)
     pVMWARE->pvtSema = &pScrn->vtSema;
 
     pVMWARE->pEnt = xf86GetEntityInfo(pScrn->entityList[0]);
-    if (pVMWARE->pEnt->location.type != BUS_PCI) {
-        return FALSE;
-    }
     pVMWARE->PciInfo = xf86GetPciInfoForEntity(pVMWARE->pEnt->index);
     if (pVMWARE->PciInfo == NULL) {
         return FALSE;
