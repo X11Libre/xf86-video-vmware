@@ -824,11 +824,11 @@ vmwgfx_create_hw(struct vmwgfx_saa *vsaa,
 	return FALSE;
 
     vpix->xa_flags = new_flags;
+    vpix->hw = hw;
 
     if (!vmwgfx_pixmap_add_damage(pixmap))
 	goto out_no_damage;
 
-    vpix->hw = hw;
     vpix->backing |= VMWGFX_PIX_SURFACE;
     vmwgfx_pixmap_free_storage(vpix);
 
@@ -841,6 +841,7 @@ vmwgfx_create_hw(struct vmwgfx_saa *vsaa,
     return TRUE;
 
 out_no_damage:
+    vpix->hw = NULL;
     xa_surface_destroy(hw);
     return FALSE;
 }
