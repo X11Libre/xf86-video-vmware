@@ -300,8 +300,11 @@ crtc_load_cursor_argb_kms(xf86CrtcPtr crtc, CARD32 * image)
     if (!crtcp->cursor_bo) {
 	size_t size = 64*64*4;
         crtcp->cursor_bo = vmwgfx_dmabuf_alloc(ms->fd, size);
-	if (!crtcp->cursor_bo)
+	if (!crtcp->cursor_bo) {
+	    xf86DrvMsg(crtc->scrn->scrnIndex, X_ERROR,
+		       "Failed to create a dmabuf for cursor.\n");
 	    return;
+	}
 	crtcp->cursor_handle = crtcp->cursor_bo->handle;
     }
 
@@ -309,6 +312,9 @@ crtc_load_cursor_argb_kms(xf86CrtcPtr crtc, CARD32 * image)
     if (ptr) {
 	memcpy(ptr, image, 64*64*4);
 	vmwgfx_dmabuf_unmap(crtcp->cursor_bo);
+    } else {
+	xf86DrvMsg(crtc->scrn->scrnIndex, X_ERROR,
+		   "Failed to map cursor dmabuf.\n");
     }
 
     if (crtc->cursor_shown)
