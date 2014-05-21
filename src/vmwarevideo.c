@@ -687,7 +687,12 @@ vmwareVideoInitStream(ScrnInfoPtr pScrn, VMWAREVideoPtr pVid,
 	int nBoxes = REGION_NUM_RECTS(&pVid->clipBoxes);
 
 #if HAVE_FILLKEYHELPERDRAWABLE
-	xf86XVFillKeyHelperDrawable(draw, pVid->colorKey, clipBoxes);
+	if (draw->type == DRAWABLE_WINDOW) {
+	    xf86XVFillKeyHelperDrawable(draw, pVid->colorKey, clipBoxes);
+	    DamageDamageRegion(draw, clipBoxes);
+	} else {
+	    xf86XVFillKeyHelper(pScrn->pScreen, pVid->colorKey, clipBoxes);
+        }
 #else
         xf86XVFillKeyHelper(pScrn->pScreen, pVid->colorKey, clipBoxes);
 #endif
