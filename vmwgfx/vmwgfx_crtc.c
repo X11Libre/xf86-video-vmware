@@ -276,6 +276,10 @@ crtc_set_cursor_position(xf86CrtcPtr crtc, int x, int y)
     modesettingPtr ms = modesettingPTR(crtc->scrn);
     struct crtc_private *crtcp = crtc->driver_private;
 
+    /* Seems like newer X servers try to move cursors without images */
+    if (!crtcp->cursor_bo)
+	return;
+
     drmModeMoveCursor(ms->fd, crtcp->drm_crtc->crtc_id, x, y);
 }
 
