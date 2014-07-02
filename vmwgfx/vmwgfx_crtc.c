@@ -193,6 +193,7 @@ crtc_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
 	crtcp->entry.pixmap = pixmap;
 	crtcp->scanout_id = vmwgfx_scanout_ref(&crtcp->entry);
 	if (crtcp->scanout_id == -1) {
+	    crtcp->entry.pixmap = NULL;
 	    LogMessage(X_ERROR, "Failed to convert pixmap to scanout.\n");
 	    return FALSE;
 	}
