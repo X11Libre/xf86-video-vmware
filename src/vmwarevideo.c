@@ -794,7 +794,8 @@ vmwareVideoPlay(ScrnInfoPtr pScrn, VMWAREVideoPtr pVid,
     struct PACKED _body {
         uint32 escape;
         uint32 streamId;
-        struct _item items[SVGA_VIDEO_NUM_REGS];
+        /* Old hosts can not handle more then these regs */
+        struct _item items[SVGA_VIDEO_DATA_GMRID];
     };
 
     struct PACKED _cmdSetRegs {
