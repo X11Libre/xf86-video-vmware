@@ -491,8 +491,10 @@ drv_pre_init(ScrnInfoPtr pScrn, int flags)
 	goto out_err_bus;
     }
 
+#ifdef XSERVER_PLATFORM_BUS
     if (pEnt->location.type == BUS_PLATFORM)
         ms->platform_dev = pEnt->location.id.plat;
+#endif
 
     xf86SetPrimInitDone(pScrn->entityList[0]);
 
