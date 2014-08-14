@@ -837,7 +837,7 @@ vmwareVideoPlay(ScrnInfoPtr pScrn, VMWAREVideoPtr pVid,
     cmdSetRegs.body.streamId = pVid->streamId;
 
     items = cmdSetRegs.body.items;
-    for (i = SVGA_VIDEO_ENABLED; i < SVGA_VIDEO_NUM_REGS; i++) {
+    for (i = SVGA_VIDEO_ENABLED; i < SVGA_VIDEO_DATA_GMRID; i++) {
         items[i].regId = i;
     }
 
