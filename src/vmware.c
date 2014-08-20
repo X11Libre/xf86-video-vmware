@@ -375,7 +375,8 @@ VMWAREPreInit(ScrnInfoPtr pScrn, int flags)
 #ifdef ACCELERATE_OPS
     pVMWARE->vmwareCapability = vmwareReadReg(pVMWARE, SVGA_REG_CAPABILITIES);
 #else
-    pVMWARE->vmwareCapability = 0;
+    pVMWARE->vmwareCapability = vmwareReadReg(pVMWARE, SVGA_REG_CAPABILITIES) &
+	SVGA_CAP_PITCHLOCK;
 #endif
 
     pVMWARE->bitsPerPixel = vmwareReadReg(pVMWARE,
@@ -858,6 +859,8 @@ VMWAREModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode, Bool rebuildPixmap)
         return FALSE;
     pScrn->vtSema = TRUE;
 
+    if (pVMWARE->vmwareCapability & SVGA_CAP_PITCHLOCK)
+	vmwareWriteReg(pVMWARE, SVGA_REG_PITCHLOCK, 0);
     vmwareReg->svga_reg_enable = 1;
     vmwareReg->svga_reg_width = max(mode->HDisplay, pScrn->virtualX);
     vmwareReg->svga_reg_height = max(mode->VDisplay, pScrn->virtualY);
