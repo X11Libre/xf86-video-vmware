@@ -58,6 +58,10 @@
      ((GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) == 1) && \
       (GET_ABI_MINOR(ABI_VIDEODRV_VERSION) >= 2)))
 
+#if HAVE_FILLKEYHELPERDRAWABLE
+#include <damage.h>
+#endif
+
 #define MAKE_ATOM(a) MakeAtom(a, sizeof(a) - 1, TRUE)
 
 /*
