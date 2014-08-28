@@ -30,7 +30,6 @@
 #endif
 
 #include "xf86.h"
-#include <xorgVersion.h>
 #include "compiler.h"
 #include "xf86Pci.h"		/* pci */
 #include "vm_device_version.h"
@@ -497,7 +496,7 @@ VMWareDriverFunc(ScrnInfoPtr pScrn,
 			      pScrn->yDpi / 2) / pScrn->yDpi;
       }
       return TRUE;
-#if XORG_VERSION_CURRENT >= XORG_VERSION_NUMERIC(1,15,99,902,0)
+#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) >= 18
    case SUPPORTS_SERVER_FDS:
       return TRUE;
 #endif
@@ -523,6 +522,7 @@ _X_EXPORT DriverRec vmware = {
 #if VMWARE_DRIVER_FUNC
     VMWareDriverFunc,
 #endif
+#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) >= 4
 #if XSERVER_LIBPCIACCESS
     VMwareDeviceMatch,
     VMwarePciProbe,
@@ -530,10 +530,13 @@ _X_EXPORT DriverRec vmware = {
     NULL,
     NULL,
 #endif
+#endif
+#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) >= 13
 #ifdef XSERVER_PLATFORM_BUS
     VMwarePlatformProbe,
 #else
     NULL,
+#endif
 #endif
 };
 
