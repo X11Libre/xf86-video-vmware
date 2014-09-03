@@ -694,7 +694,8 @@ vmwgfx_modify_pixmap_header (PixmapPtr pixmap, int w, int h, int depth,
 
     vmwgfx_pix_resize(pixmap, old_pitch, old_height, old_width);
     vmwgfx_pixmap_free_storage(vpix);
-    WSBMLISTADDTAIL(&vpix->pixmap_list, &vsaa->pixmaps);
+    if (WSBMLISTEMPTY(&vpix->pixmap_list))
+	WSBMLISTADDTAIL(&vpix->pixmap_list, &vsaa->pixmaps);
 
     return TRUE;
 
