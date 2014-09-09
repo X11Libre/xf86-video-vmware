@@ -213,6 +213,15 @@ crtc_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
     crtc->active = TRUE;
 #endif
 
+    /*
+     * Strictly, this needs to be done only once per configuration change,
+     * not once per crtc, but there's no better place to put this. Since
+     * Intel wrote the crtc code, let's do what the xf86-video-intel driver
+     * does.
+     */
+    if (pScreen)
+	xf86_reload_cursors(pScreen);
+
     return TRUE;
 }
 
