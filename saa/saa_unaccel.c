@@ -396,7 +396,6 @@ saa_check_poly_arc(DrawablePtr pDrawable, GCPtr pGC, int narcs, xArc * pArcs)
  * region fragmentation. In any case, this greatly improves on the performance of
  * shaped windows on top of accelerated contents, for example unscaled OSD in xine.
  */
-#if 0
 static Bool
 saa_check_poly_fill_rect_noreadback(DrawablePtr pDrawable, GCPtr pGC,
 				    int nrect, xRectangle *prect)
@@ -477,7 +476,7 @@ saa_check_poly_fill_rect_noreadback(DrawablePtr pDrawable, GCPtr pGC,
 
     return FALSE;
 }
-#endif
+
 void
 saa_check_poly_fill_rect(DrawablePtr pDrawable, GCPtr pGC,
 			 int nrect, xRectangle * prect)
@@ -488,17 +487,8 @@ saa_check_poly_fill_rect(DrawablePtr pDrawable, GCPtr pGC,
 
     SAA_FALLBACK(("to %p (%c)\n", pDrawable, saa_drawable_loc(pDrawable)));
 
-
-    /*
-     * Disable saa_check_poly_fill_rect_noreadback as it causes rendering
-     * artefacts with some motif applications. There seems to be some
-     * confusion with the damage area.
-     */
-
-#if 0
     if (saa_check_poly_fill_rect_noreadback(pDrawable, pGC, nrect, prect))
 	return;
-#endif
 
     sscreen->fallback_count++;
 
