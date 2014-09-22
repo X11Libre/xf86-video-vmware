@@ -617,10 +617,32 @@ saa_check_copy_window(WindowPtr pWin, DDXPointRec ptOldOrg, RegionPtr prgnSrc)
 	goto out_no_access;;
 
     if (saa_prepare_access_pixmap(pPixmap, SAA_ACCESS_W, NULL)) {
+	struct saa_pixmap *spix;
+	RegionRec rgnDst;
+
+	REGION_NULL(pScreen, &rgnDst);
+	REGION_COPY(pScreen, &rgnDst, prgnSrc);
+
 	saa_swap(sscreen, pScreen, CopyWindow);
 	pScreen->CopyWindow(pWin, ptOldOrg, prgnSrc);
 	saa_swap(sscreen, pScreen, CopyWindow);
-	saa_fad_write(pDrawable, SAA_ACCESS_W);
+	saa_finish_access_pixmap(pPixmap, SAA_ACCESS_W);
+
+	spix = saa_get_saa_pixmap(pPixmap);
+	if (spix->damage) {
+	    int dx, dy;
+
+	    dx = ptOldOrg.x - pWin->drawable.x;
+	    dy = ptOldOrg.y - pWin->drawable.y;
+	    REGION_TRANSLATE(pScreen, &rgnDst, -dx, -dy);
+	    REGION_INTERSECT(pSreen, &rgnDst, &pWin->borderClip, &rgnDst);
+	    REGION_TRANSLATE(pScreen, &rgnDst, xoff, yoff);
+
+	    REGION_INTERSECT(pScreen, &rgnDst, &rgnDst,
+			     saa_pix_damage_pending(spix));
+	    saa_pixmap_dirty(pPixmap, FALSE, &rgnDst);
+	}
+	REGION_UNINIT(pScreen, &rgnDst);
     }
     saa_fad_read(pDrawable);
  out_no_access:
