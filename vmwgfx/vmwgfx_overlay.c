@@ -35,6 +35,7 @@
  */
 
 
+#include "xorg-server.h"
 #include "xf86xv.h"
 #include "fourcc.h"
 #define debug_printf(...)
