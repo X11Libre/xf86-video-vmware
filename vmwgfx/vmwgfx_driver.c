@@ -806,6 +806,7 @@ drv_create_screen_resources(ScreenPtr pScreen)
 	return ret;
 
     drv_adjust_frame(ADJUST_FRAME_ARGS(pScrn, pScrn->frameX0, pScrn->frameY0));
+    vmwgfx_uevent_init(pScrn, ms);
 
     return drv_enter_vt(VT_FUNC_ARGS);
 }
@@ -1275,6 +1276,7 @@ drv_close_screen(CLOSE_SCREEN_ARGS_DECL)
     if (pScrn->vtSema)
         pScrn->LeaveVT(VT_FUNC_ARGS);
 
+    vmwgfx_uevent_fini(pScrn, ms);
     pScrn->vtSema = FALSE;
 
     vmwgfx_unwrap(ms, pScrn, EnterVT);

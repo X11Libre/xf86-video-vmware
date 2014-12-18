@@ -142,6 +142,18 @@ AC_MSG_CHECKING([whether to build Kernel Mode Setting and 3D])
 if test x$BUILD_VMWGFX = xyes; then
 	AC_MSG_RESULT([yes])
         AC_DEFINE([BUILD_VMWGFX], 1, [Building the vmwgfx driver path])
+	libudev_check=yes
+	AC_ARG_WITH([libudev],
+		[AS_HELP_STRING([--without-libudev],
+			[Use to build without libudev on linux])],
+			[if test x$withval = xno; then libudev_check=no; fi]
+			[])
+	if test $libudev_check != no; then
+		PKG_CHECK_MODULES(LIBUDEV, [libudev],
+					   [AC_DEFINE([HAVE_LIBUDEV], 1,
+					   [Has libudev installed])],
+					   []);
+        fi
 else
 	AC_MSG_RESULT([no])
 fi
