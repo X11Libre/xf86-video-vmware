@@ -541,6 +541,14 @@ drv_pre_init(ScrnInfoPtr pScrn, int flags)
 		   ms->drm_major, ms->drm_minor, ms->drm_patch);
     }
 
+    ms->has_screen_targets = ms->drm_major > 2 ||
+	(ms->drm_major == 2 && ms->drm_minor >= 7);
+    ms->has_screen_targets = (ms->has_screen_targets &&
+			      !vmwgfx_get_param(ms->fd,
+						DRM_VMW_PARAM_SCREEN_TARGET,
+						&cap) &&
+			      cap != 0);
+
     ms->check_fb_size = (vmwgfx_max_fb_size(ms->fd, &ms->max_fb_size) == 0);
 
     if (vmwgfx_get_param(ms->fd, DRM_VMW_PARAM_HW_CAPS, &cap) != 0) {
@@ -744,7 +752,7 @@ void xorg_flush(ScreenPtr pScreen)
 
 	if (vpix->fb_id != -1) {
 	    if (vpix->pending_update) {
-		if (ms->only_hw_presents &&
+		if (vpix->scanout_hw &&
 		    REGION_NOTEMPTY(pscreen, vpix->pending_update)) {
 		    (void) vmwgfx_hw_accel_validate(pixmap, 0, XA_FLAG_SCANOUT,
 						    0, NULL);
@@ -756,7 +764,7 @@ void xorg_flush(ScreenPtr pScreen)
 		REGION_EMPTY(pScreen, vpix->pending_update);
 	    }
 	    if (vpix->pending_present) {
-		if (ms->only_hw_presents)
+		if (vpix->scanout_hw)
 		    (void) vmwgfx_scanout_update(ms->fd, vpix->fb_id,
 						 vpix->pending_present);
 		else
@@ -1071,7 +1079,8 @@ drv_screen_init(SCREEN_INIT_ARGS_DECL)
     if (!vmwgfx_saa_init(pScreen, ms->fd, ms->xat, &xorg_flush,
 			 ms->direct_presents,
 			 ms->only_hw_presents,
-			 ms->rendercheck)) {
+			 ms->rendercheck,
+			 ms->has_screen_targets)) {
 	FatalError("Failed to initialize SAA.\n");
     }
 
@@ -1102,9 +1111,14 @@ drv_screen_init(SCREEN_INIT_ARGS_DECL)
     if (ms->xat != NULL) {
 	xf86DrvMsg(pScrn->scrnIndex, ms->from_dp, "Direct presents are %s.\n",
 		   (ms->direct_presents) ? "enabled" : "disabled");
-	xf86DrvMsg(pScrn->scrnIndex, ms->from_hwp, "Hardware only presents "
-		   "are %s.\n",
-		   (ms->only_hw_presents) ? "enabled" : "disabled");
+	if (ms->only_hw_presents)
+	    xf86DrvMsg(pScrn->scrnIndex, ms->from_hwp, "Hardware only presents "
+		       "are enabled.\n");
+	else
+	    xf86DrvMsg(pScrn->scrnIndex, ms->from_hwp, "Hardware only presents "
+		       "are %s.\n",
+		       (ms->has_screen_targets) ? "automatic per scanout" :
+		       "disabled");
     }
 
     xf86SetBackingStore(pScreen);

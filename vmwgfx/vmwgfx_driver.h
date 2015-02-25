@@ -115,6 +115,7 @@ typedef struct _modesettingRec
     Bool only_hw_presents;
     MessageType from_hwp;
     Bool isMaster;
+    Bool has_screen_targets;
 
 
     /* Broken-out options. */
