@@ -324,7 +324,7 @@ output_set_property(xf86OutputPtr output, Atom property, RRPropertyValuePtr valu
 		    value->size != 1)
 		return FALSE;
 	    val = *(uint32_t *)value->data;
-
+	    p->value = val;
 	    drmModeConnectorSetProperty
 		(ms->fd, vmwgfx_output->drm_connector->connector_id,
 		 p->mode_prop->prop_id, (uint64_t)val);
@@ -342,9 +342,10 @@ output_set_property(xf86OutputPtr output, Atom property, RRPropertyValuePtr valu
 	    /* search for matching name string, then set its value down */
 	    for (j = 0; j < p->mode_prop->count_enums; j++) {
 		if (!strcmp(p->mode_prop->enums[j].name, name)) {
+		    p->value = p->mode_prop->enums[j].value;
 		    drmModeConnectorSetProperty
 			(ms->fd, vmwgfx_output->drm_connector->connector_id,
-			 p->mode_prop->prop_id, p->mode_prop->enums[j].value);
+			 p->mode_prop->prop_id, p->value);
 		    return TRUE;
 		}
 	    }
@@ -355,54 +356,76 @@ output_set_property(xf86OutputPtr output, Atom property, RRPropertyValuePtr valu
 }
 #endif /* RANDR_12_INTERFACE */
 
+/**
+ * vmwgfx_output_property_scan - Update a single property on a single output
+ * @output: Pointer to the output to consider.
+ * @p: The property to update.
+ *
+ * Reads the property value from the drm connector corresponding to
+ * @output and notifies the RandR code of the new value, sending out an
+ * event if the new value doesn't match the old one. Finally updates @p
+ * with the new value.
+ */
+static Bool
+vmwgfx_output_property_scan(xf86OutputPtr output,
+			    struct output_prop *p)
+{
+    struct output_private *vmwgfx_output = output->driver_private;
+    uint32_t value = vmwgfx_output->drm_connector->prop_values[p->index];
+    int err = 0;
+
+#ifdef RANDR_13_INTERFACE
+    if (p->mode_prop->flags & DRM_MODE_PROP_RANGE) {
+	err = RRChangeOutputProperty(output->randr_output,
+				     p->atoms[0], XA_INTEGER, 32,
+				     PropModeReplace, 1, &value,
+				     value != p->value, FALSE);
+    } else if (p->mode_prop->flags & DRM_MODE_PROP_ENUM) {
+	int j;
+
+	/* search for matching name string, then set its value down */
+	for (j = 0; j < p->mode_prop->count_enums; j++) {
+	    if (p->mode_prop->enums[j].value == value)
+		break;
+	}
+
+	err = RRChangeOutputProperty(output->randr_output, p->atoms[0],
+				     XA_ATOM, 32, PropModeReplace, 1,
+				     &p->atoms[j+1], value != p->value,
+				     FALSE);
+    }
+#endif /* RANDR_13_INTERFACE */
+    if (!err)
+	p->value = value;
+
+    return !err;
+}
+
 #ifdef RANDR_13_INTERFACE
 static Bool
 output_get_property(xf86OutputPtr output, Atom property)
 {
     modesettingPtr ms = modesettingPTR(output->scrn);
     struct output_private *vmwgfx_output = output->driver_private;
-    uint32_t value;
-    int err, i;
+    int i;
 
     if (output->scrn->vtSema) {
-	int id = vmwgfx_output->drm_connector->connector_id;
+	drmModeConnectorPtr drm_connector =
+	    drmModeGetConnector(ms->fd,
+				vmwgfx_output->drm_connector->connector_id);
 
-	drmModeFreeConnector(vmwgfx_output->drm_connector);
-	vmwgfx_output->drm_connector = drmModeGetConnector(ms->fd, id);
+	if (drm_connector) {
+	    drmModeFreeConnector(vmwgfx_output->drm_connector);
+	    vmwgfx_output->drm_connector = drm_connector;
+	}
     }
-
-    if (!vmwgfx_output->drm_connector)
-	return FALSE;
 
     for (i = 0; i < vmwgfx_output->num_props; i++) {
 	struct output_prop *p = &vmwgfx_output->props[i];
 	if (p->atoms[0] != property)
 	    continue;
 
-	value = vmwgfx_output->drm_connector->prop_values[p->index];
-
-	if (p->mode_prop->flags & DRM_MODE_PROP_RANGE) {
-	    err = RRChangeOutputProperty(output->randr_output,
-					 property, XA_INTEGER, 32,
-					 PropModeReplace, 1, &value,
-					 FALSE, FALSE);
-
-	    return !err;
-	} else if (p->mode_prop->flags & DRM_MODE_PROP_ENUM) {
-	    int j;
-
-	    /* search for matching name string, then set its value down */
-	    for (j = 0; j < p->mode_prop->count_enums; j++) {
-		if (p->mode_prop->enums[j].value == value)
-		    break;
-	    }
-
-	    err = RRChangeOutputProperty(output->randr_output, property,
-					 XA_ATOM, 32, PropModeReplace, 1,
-					 &p->atoms[j+1], FALSE, FALSE);
-
-	    return !err;
-	}
+	return vmwgfx_output_property_scan(output, p);
     }
 
     return FALSE;
@@ -586,6 +609,46 @@ xorg_output_get_id(xf86OutputPtr output)
 }
 
 #ifdef HAVE_LIBUDEV
+
+/**
+ * vmwgfx_output_properties_scan - Update all properties on all outputs
+ * on this screen.
+ * @pScrn: Pointer to the ScrnInfo structure for this screen.
+ *
+ * Updates all connector info from DRM and then calls
+ * vmwgfx_output_property_scan() for all properties on all connectors.
+ */
+static void
+vmwgfx_output_properties_scan(ScrnInfoPtr pScrn)
+{
+    xf86CrtcConfigPtr config = XF86_CRTC_CONFIG_PTR(pScrn);
+    modesettingPtr ms = modesettingPTR(pScrn);
+    int i;
+
+    for (i = 0; i < config->num_output; i++) {
+	xf86OutputPtr output = config->output[i];
+	struct output_private *vmwgfx_output = output->driver_private;
+	int j;
+
+	if (output->scrn->vtSema) {
+	    int id = vmwgfx_output->drm_connector->connector_id;
+
+	    if (vmwgfx_output->drm_connector)
+		drmModeFreeConnector(vmwgfx_output->drm_connector);
+	    vmwgfx_output->drm_connector = drmModeGetConnector(ms->fd, id);
+	}
+
+	if (!vmwgfx_output->drm_connector)
+	    continue;
+
+	for (j = 0; j < vmwgfx_output->num_props; j++) {
+	    struct output_prop *p = &vmwgfx_output->props[j];
+
+	    (void) vmwgfx_output_property_scan(output, p);
+	}
+    }
+}
+
 /**
  * vmwgfx_handle uevent - Property update callback
  *
@@ -598,12 +661,18 @@ vmwgfx_handle_uevents(int fd, void *closure)
     ScrnInfoPtr scrn = closure;
     modesettingPtr ms = modesettingPTR(scrn);
     struct udev_device *dev;
+    ScreenPtr pScreen = xf86ScrnToScreen(scrn);
 
     dev = udev_monitor_receive_device(ms->uevent_monitor);
     if (!dev)
 	return;
 
-    RRGetInfo(xf86ScrnToScreen(scrn), TRUE);
+    /* Read new properties, connection status and preferred modes from DRM. */
+    vmwgfx_output_properties_scan(scrn);
+
+    if (pScreen)
+	RRGetInfo(pScreen, TRUE);
+
     udev_device_unref(dev);
 }
 #endif  /* HAVE_LIBUDEV */
