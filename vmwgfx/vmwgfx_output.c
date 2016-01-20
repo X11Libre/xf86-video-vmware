@@ -73,9 +73,9 @@ struct output_private
     int num_props;
     struct output_prop *props;
     int c;
-    Bool is_implicit;
     int suggested_x;
     int suggested_y;
+    int implicit_placement;
     xf86CrtcPtr saved_crtc;
     Bool saved_crtc_enabled;
 };
@@ -134,6 +134,24 @@ vmwgfx_output_origin(xf86OutputPtr output, int *x, int *y)
 }
 
 /**
+ * vmwgfx_output_is_implicit - Whether an output uses implicit placement
+ *
+ * output: The output to consider.
+ *
+ * Returns: TRUE if the output uses implicit placement. False otherwise.
+ */
+static Bool
+vmwgfx_output_is_implicit(xf86OutputPtr output)
+{
+    struct output_private *vmwgfx_output = output->driver_private;
+
+    if (vmwgfx_output->implicit_placement == -1)
+	return TRUE;
+
+    return !!vmwgfx_output->props[vmwgfx_output->implicit_placement].value;
+}
+
+/**
  * output_property_ignore - Function to determine whether to ignore or
  * to re-export a drm property.
  *
@@ -186,6 +204,8 @@ output_create_resources(xf86OutputPtr output)
 	    vmwgfx_output->suggested_x = j;
 	if (!strcmp(drmmode_prop->name,"suggested Y"))
 	    vmwgfx_output->suggested_y = j;
+	if (!strcmp(drmmode_prop->name,"implicit_placement"))
+	    vmwgfx_output->implicit_placement = j;
 	vmwgfx_output->num_props++;
 	j++;
     }
@@ -522,7 +542,6 @@ vmwgfx_output_explicit_overlap(ScrnInfoPtr pScrn)
     RegionRec output_union;
     RegionRec cur_output;
     RegionRec result;
-    struct output_private *priv;
     xf86CrtcPtr crtc;
     Bool overlap = FALSE;
     int i;
@@ -537,10 +556,9 @@ vmwgfx_output_explicit_overlap(ScrnInfoPtr pScrn)
      */
     for (i = 0; i < config->num_output; i++) {
 	output = config->output[i];
-	priv = output->driver_private;
 	crtc = output->crtc;
 
-	if (!crtc || !crtc->enabled || !priv->is_implicit)
+	if (!crtc || !crtc->enabled || !vmwgfx_output_is_implicit(output))
 	    continue;
 
 	REGION_RESET(pScreen, &cur_output, &crtc->bounds);
@@ -552,10 +570,9 @@ vmwgfx_output_explicit_overlap(ScrnInfoPtr pScrn)
      */
     for (i = 0; i < config->num_output; i++) {
 	output = config->output[i];
-	priv = output->driver_private;
 	crtc = output->crtc;
 
-	if (!crtc || !crtc->enabled || priv->is_implicit)
+	if (!crtc || !crtc->enabled || vmwgfx_output_is_implicit(output))
 	    continue;
 
 	REGION_RESET(pScreen, &cur_output, &crtc->bounds);
@@ -594,8 +611,6 @@ xorg_output_init(ScrnInfoPtr pScrn)
     }
 
     for (c = 0; c < res->count_connectors; c++) {
-	Bool is_implicit = TRUE;
-
 	drm_connector = drmModeGetConnector(ms->fd, res->connectors[c]);
 	if (!drm_connector)
 	    goto out;
@@ -620,9 +635,9 @@ xorg_output_init(ScrnInfoPtr pScrn)
 	    continue;
 	}
 
-	priv->is_implicit = is_implicit;
 	priv->suggested_x = -1;
 	priv->suggested_y = -1;
+	priv->implicit_placement = -1;
 
 	drm_encoder = drmModeGetEncoder(ms->fd, drm_connector->encoders[0]);
 	if (drm_encoder) {
