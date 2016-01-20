@@ -88,6 +88,7 @@ enum xorg_throttling_reason {
 
 struct vmwgfx_hosted;
 struct xf86_platform_device;
+struct vmwgfx_layout;
 
 typedef struct _modesettingRec
 {
@@ -149,6 +150,7 @@ typedef struct _modesettingRec
 #ifdef HAVE_LIBUDEV
     struct udev_monitor *uevent_monitor;
     InputHandlerProc uevent_handler;
+    struct vmwgfx_layout *layout;
 #endif
 } modesettingRec, *modesettingPtr;
 
@@ -196,6 +198,24 @@ void
 vmwgfx_uevent_init(ScrnInfoPtr scrn, modesettingPtr ms);
 void
 vmwgfx_uevent_fini(ScrnInfoPtr scrn, modesettingPtr ms);
+Bool
+vmwgfx_output_has_origin(xf86OutputPtr output);
+void
+vmwgfx_output_origin(xf86OutputPtr output, int *x, int *y);
+void
+vmwgfx_outputs_off(ScrnInfoPtr pScrn);
+void
+vmwgfx_outputs_on(ScrnInfoPtr pScrn);
+
+/***********************************************************************
+ * vmwgfx_layout.c
+ */
+struct vmwgfx_layout *
+vmwgfx_layout_from_kms(ScrnInfoPtr pScrn);
+void
+vmwgfx_layout_configuration(ScrnInfoPtr pScrn, struct vmwgfx_layout *layout);
+void
+vmwgfx_layout_handler(ScrnInfoPtr pScrn);
 
 /***********************************************************************
  * xorg_xv.c

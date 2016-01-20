@@ -74,6 +74,10 @@ struct output_private
     struct output_prop *props;
     int c;
     Bool is_implicit;
+    int suggested_x;
+    int suggested_y;
+    xf86CrtcPtr saved_crtc;
+    Bool saved_crtc_enabled;
 };
 
 static const char *output_enum_list[] = {
@@ -94,6 +98,40 @@ static const char *output_enum_list[] = {
     "EDP",
     "Virtual",
 };
+
+/**
+ * vmwgfx_output_has_origin - Whether we've detected layout info on the DRM
+ * connector.
+ *
+ * @output: The output to consider.
+ *
+ * Returns: TRUE if the corresponding DRM connector has layout info.
+ * FALSE otherwise.
+ */
+Bool
+vmwgfx_output_has_origin(xf86OutputPtr output)
+{
+    struct output_private *vmwgfx_output = output->driver_private;
+
+    return vmwgfx_output->suggested_x != -1 &&
+	vmwgfx_output->suggested_y != -1;
+}
+
+/**
+ * vmwgfx_output_origin - Get the origin for an output in the GUI layout.
+ *
+ * @output: The output to consider.
+ * @x: Outputs the x coordinate of the origin.
+ * @y: Outputs the y coordinate of the origin.
+ */
+void
+vmwgfx_output_origin(xf86OutputPtr output, int *x, int *y)
+{
+    struct output_private *vmwgfx_output = output->driver_private;
+
+    *x = vmwgfx_output->props[vmwgfx_output->suggested_x].value;
+    *y = vmwgfx_output->props[vmwgfx_output->suggested_y].value;
+}
 
 /**
  * output_property_ignore - Function to determine whether to ignore or
@@ -144,6 +182,10 @@ output_create_resources(xf86OutputPtr output)
 	vmwgfx_output->props[j].index = i;
 	vmwgfx_output->props[j].mode_prop = drmmode_prop;
 	vmwgfx_output->props[j].value = drm_connector->prop_values[i];
+	if (!strcmp(drmmode_prop->name,"suggested X"))
+	    vmwgfx_output->suggested_x = j;
+	if (!strcmp(drmmode_prop->name,"suggested Y"))
+	    vmwgfx_output->suggested_y = j;
 	vmwgfx_output->num_props++;
 	j++;
     }
@@ -580,6 +622,8 @@ xorg_output_init(ScrnInfoPtr pScrn)
 	}
 
 	priv->is_implicit = is_implicit;
+	priv->suggested_x = -1;
+	priv->suggested_y = -1;
 
 	drm_encoder = drmModeGetEncoder(ms->fd, drm_connector->encoders[0]);
 	if (drm_encoder) {
@@ -650,6 +694,60 @@ vmwgfx_output_properties_scan(ScrnInfoPtr pScrn)
 }
 
 /**
+ * vmwgfx_outputs_off - Mark all crtc / output pairs as disabled and save
+ * their configuration.
+ *
+ * @pScrn: Pointer to a ScrnInfo struct.
+ *
+ * Note that to commit this to the display system, a call to this function
+ * should be followed by a call to xf86DisableUnusedFunctions()
+ */
+void
+vmwgfx_outputs_off(ScrnInfoPtr pScrn)
+{
+    xf86CrtcConfigPtr config = XF86_CRTC_CONFIG_PTR(pScrn);
+    int i;
+
+    for (i = 0; i < config->num_output; ++i) {
+	xf86OutputPtr output = config->output[i];
+	struct output_private *vmwgfx_output = output->driver_private;
+
+	vmwgfx_output->saved_crtc = output->crtc;
+	if (output->crtc) {
+	    vmwgfx_output->saved_crtc_enabled = output->crtc->enabled;
+	    output->crtc->enabled = FALSE;
+	    output->crtc = NULL;
+	}
+    }
+}
+
+/**
+ * vmwgfx_outputs_on - Reset crtc / output pairs to a configuation saved
+ * using vmwgfx_output_off.
+ *
+ * @pScrn: Pointer to a ScrnInfo struct.
+ *
+ * Note that to commit the setup to the display system, a call to this
+ * function should be followed by a call to xf86SetDesiredModes().
+ */
+void
+vmwgfx_outputs_on(ScrnInfoPtr pScrn)
+{
+    xf86CrtcConfigPtr config = XF86_CRTC_CONFIG_PTR(pScrn);
+    int i;
+
+    for (i = 0; i < config->num_output; ++i) {
+	xf86OutputPtr output = config->output[i];
+	struct output_private *vmwgfx_output = output->driver_private;
+
+	if (vmwgfx_output->saved_crtc) {
+	    output->crtc = vmwgfx_output->saved_crtc;
+	    output->crtc->enabled = vmwgfx_output->saved_crtc_enabled;
+	}
+    }
+}
+
+/**
  * vmwgfx_handle uevent - Property update callback
  *
  * @fd: File descriptor for the uevent
@@ -672,6 +770,8 @@ vmwgfx_handle_uevents(int fd, void *closure)
 
     if (pScreen)
 	RRGetInfo(pScreen, TRUE);
+
+    vmwgfx_layout_handler(scrn);
 
     udev_device_unref(dev);
 }

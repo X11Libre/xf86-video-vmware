@@ -30,5 +30,6 @@ libvmwgfx_la_SOURCES = \
 	vmwgfx_hosted_priv.h \
 	vmwgfx_xmir.c \
 	vmwgfx_xwayland.c \
+	vmwgfx_layout.c \
 	wsbm_util.h
 endif
