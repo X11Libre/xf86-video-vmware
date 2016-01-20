@@ -152,6 +152,7 @@ typedef struct _modesettingRec
     InputHandlerProc uevent_handler;
     struct vmwgfx_layout *layout;
 #endif
+    Bool autoLayout;
 } modesettingRec, *modesettingPtr;
 
 #define modesettingPTR(p) ((modesettingPtr)((p)->driverPrivate))

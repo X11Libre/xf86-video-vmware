@@ -1033,6 +1033,7 @@ drv_screen_init(SCREEN_INIT_ARGS_DECL)
 
     xf86SetBlackWhitePixels(pScreen);
 
+    ms->autoLayout = TRUE;
     vmw_ctrl_ext_init(pScrn);
 
     if (ms->accelerate_render) {

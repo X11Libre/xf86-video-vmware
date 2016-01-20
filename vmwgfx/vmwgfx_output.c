@@ -785,7 +785,8 @@ vmwgfx_handle_uevents(int fd, void *closure)
     if (pScreen)
 	RRGetInfo(pScreen, TRUE);
 
-    vmwgfx_layout_handler(scrn);
+    if (ms->autoLayout)
+	vmwgfx_layout_handler(scrn);
 
     udev_device_unref(dev);
 }
