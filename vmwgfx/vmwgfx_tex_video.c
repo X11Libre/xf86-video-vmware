@@ -25,6 +25,9 @@
  * Author: Thomas Hellstrom <thellstrom@vmware.com>
  * Author: Zack Rusin <zackr@vmware.com>
  */
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include "vmwgfx_driver.h"
 #include "vmwgfx_drmi.h"

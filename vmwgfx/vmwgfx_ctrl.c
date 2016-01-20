@@ -31,6 +31,9 @@
  *      The implementation of the VMWARE_CTRL protocol extension that
  *      allows X clients to communicate with the driver.
  */
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <xorg-server.h>
 #include "dixstruct.h"
