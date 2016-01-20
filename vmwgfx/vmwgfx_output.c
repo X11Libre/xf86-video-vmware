@@ -322,7 +322,6 @@ output_get_modes(xf86OutputPtr output)
 		mode->type |= M_T_DRIVER;
 	    xf86SetModeDefaultName(mode);
 	    modes = xf86ModesAdd(modes, mode);
-	    xf86PrintModeline(0, mode);
 	}
     }
 
