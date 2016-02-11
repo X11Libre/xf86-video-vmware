@@ -554,18 +554,6 @@ drv_pre_init(ScrnInfoPtr pScrn, int flags)
 
     ms->check_fb_size = (vmwgfx_max_fb_size(ms->fd, &ms->max_fb_size) == 0);
 
-    if (vmwgfx_get_param(ms->fd, DRM_VMW_PARAM_HW_CAPS, &cap) != 0) {
-	xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "Failed to detect device "
-		   "screen object capability.\n");
-	goto out_depth;
-    }
-
-    if ((cap & SVGA_CAP_SCREEN_OBJECT_2) == 0) {
-	xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "Device is not screen object "
-		   "capable.\n");
-	goto out_depth;
-    }
-
     switch (pScrn->depth) {
     case 15:
     case 16:
