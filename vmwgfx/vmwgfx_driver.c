@@ -623,6 +623,11 @@ drv_pre_init(ScrnInfoPtr pScrn, int flags)
 	goto out_modes;
     }
 
+    if (!xf86LoadSubModule(pScrn, "dri3")) {
+	xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "Failed to load dri3 module.\n");
+	goto out_modes;
+    }
+
     return TRUE;
 
   out_modes:
@@ -1055,6 +1060,16 @@ drv_screen_init(SCREEN_INIT_ARGS_DECL)
 		ms->xat = NULL;
 		ms->from_render = X_PROBED;
 	    }
+#ifdef DRI3
+	    if (major == VMW_XA_VERSION_MAJOR_DRI3 &&
+		minor >= VMW_XA_VERSION_MINOR_DRI3) {
+		ms->xa_dri3 = TRUE;
+	    } else {
+		ms->xa_dri3 = FALSE;
+		LogMessage(X_WARNING,
+			   "Gallium3D XA version insufficient for dri3.\n");
+	    }
+#endif
 	}
 	if (ms->xat == NULL && ms->rendercheck) {
 	    xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
@@ -1079,12 +1094,21 @@ drv_screen_init(SCREEN_INIT_ARGS_DECL)
     }
 
     ms->dri2_available = FALSE;
+    ms->dri3_available = FALSE;
     if (ms->enable_dri) {
 	if (ms->xat) {
 	    ms->dri2_available = xorg_dri2_init(pScreen);
 	    if (!ms->dri2_available)
 		xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
-			   "Failed to initialize direct rendering.\n");
+			   "Failed to initialize direct rendering DRI2.\n");
+#ifdef DRI3
+	    if (ms->xa_dri3) {
+	        ms->dri3_available = vmwgfx_dri3_init(pScreen);
+		if (!ms->dri3_available)
+		    xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+			       "Failed to initialize direct rendering DRI3.\n");
+	    }
+#endif /* DRI3 */
 	} else {
 	    xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
 		       "Skipped initialization of direct rendering due "
@@ -1100,8 +1124,14 @@ drv_screen_init(SCREEN_INIT_ARGS_DECL)
 	       "Rendercheck mode is %s.\n",
 	       (ms->rendercheck) ? "enabled" : "disabled");
 
-    xf86DrvMsg(pScrn->scrnIndex, ms->from_dri, "Direct rendering (3D) is %s.\n",
+    xf86DrvMsg(pScrn->scrnIndex, ms->from_dri,
+	       "Direct rendering (DRI2 3D) is %s.\n",
 	       (ms->dri2_available) ? "enabled" : "disabled");
+#ifdef DRI3
+    xf86DrvMsg(pScrn->scrnIndex, ms->from_dri,
+	       "Direct rendering (DRI3 3D) is %s.\n",
+	       (ms->dri3_available) ? "enabled" : "disabled");
+#endif
     if (ms->xat != NULL) {
 	xf86DrvMsg(pScrn->scrnIndex, ms->from_dp, "Direct presents are %s.\n",
 		   (ms->direct_presents) ? "enabled" : "disabled");
