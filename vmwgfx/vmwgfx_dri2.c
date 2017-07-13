@@ -415,6 +415,9 @@ xorg_dri2_init(ScreenPtr pScreen)
     int major, minor;
     char fdPath[VMWGFX_FD_PATH_LEN];
     ssize_t numChar;
+    static const char driverName[] = "vmwgfx";
+    static const char *const driverNames[] = {
+      driverName, driverName};
 
     memset(&dri2info, 0, sizeof(dri2info));
 
@@ -426,9 +429,11 @@ xorg_dri2_init(ScreenPtr pScreen)
 	minor = 0;
     }
 
-    dri2info.version = min(DRI2INFOREC_VERSION, 3);
+    dri2info.version = min(DRI2INFOREC_VERSION, 4);
     dri2info.fd = ms->fd;
-    dri2info.driverName = "vmwgfx";
+    dri2info.driverName = NULL;
+    dri2info.numDrivers = 2;
+    dri2info.driverNames = driverNames;
 
     /*
      * This way of obtaining the DRM device name is a bit
