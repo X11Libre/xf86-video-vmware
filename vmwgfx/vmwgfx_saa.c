@@ -371,7 +371,6 @@ vmwgfx_download_from_hw(struct saa_driver *driver, PixmapPtr pixmap,
 	goto out_err;
     REGION_SUBTRACT(vsaa->pScreen, &spix->dirty_hw, &spix->dirty_hw, readback);
     REGION_UNINIT(vsaa->pScreen, &intersection);
-
     return TRUE;
  out_err:
     REGION_UNINIT(vsaa->pScreen, &intersection);
@@ -523,6 +522,9 @@ vmwgfx_destroy_pixmap(struct saa_driver *driver, PixmapPtr pixmap)
     vmwgfx_pixmap_remove_present(vpix);
     WSBMLISTDELINIT(&vpix->pixmap_list);
     WSBMLISTDELINIT(&vpix->sync_x_head);
+
+    if (vpix->hw_is_dri2_fronts)
+	LogMessage(X_ERROR, "Incorrect dri2 front count.\n");
 }
 
 
@@ -797,8 +799,7 @@ vmwgfx_prefer_gmr(struct vmwgfx_saa *vsaa, PixmapPtr pixmap)
 
 Bool
 vmwgfx_create_hw(struct vmwgfx_saa *vsaa,
-		 PixmapPtr pixmap,
-		 Bool shared)
+		 PixmapPtr pixmap)
 {
     struct vmwgfx_saa_pixmap *vpix = vmwgfx_saa_pixmap(pixmap);
     struct xa_surface *hw;
@@ -807,25 +808,19 @@ vmwgfx_create_hw(struct vmwgfx_saa *vsaa,
     if (!vsaa->xat)
 	return FALSE;
 
-    if (!shared) {
-	if (vpix->hw)
-	    return TRUE;
+    if (vpix->hw)
+	return TRUE;
 
-	new_flags = (vpix->xa_flags & ~vpix->staging_remove_flags) |
-	    vpix->staging_add_flags | XA_FLAG_SHARED;
+    new_flags = (vpix->xa_flags & ~vpix->staging_remove_flags) |
+	vpix->staging_add_flags | XA_FLAG_SHARED;
 
-	hw = xa_surface_create(vsaa->xat,
-			       pixmap->drawable.width,
-			       pixmap->drawable.height,
-			       0,
-			       xa_type_other,
-			       vpix->staging_format,
-			       new_flags);
-    } else {
-	new_flags = vpix->xa_flags;
-	hw = vpix->hw;
-    }
-
+    hw = xa_surface_create(vsaa->xat,
+			   pixmap->drawable.width,
+			   pixmap->drawable.height,
+			   0,
+			   xa_type_other,
+			   vpix->staging_format,
+			   new_flags);
     if (hw == NULL)
 	return FALSE;
 

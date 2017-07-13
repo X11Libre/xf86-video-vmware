@@ -153,10 +153,6 @@ typedef struct _modesettingRec
     struct vmwgfx_layout *layout;
 #endif
     Bool autoLayout;
-#ifdef DRI3
-    Bool xa_dri3;
-    Bool dri3_available;
-#endif
 } modesettingRec, *modesettingPtr;
 
 #define modesettingPTR(p) ((modesettingPtr)((p)->driverPrivate))
@@ -235,14 +231,5 @@ vmw_video_free_adaptor(XF86VideoAdaptorPtr adaptor, Bool free_ports);
 
 void
 vmw_ctrl_ext_init(ScrnInfoPtr pScrn);
-
-/***********************************************************************
- * vmwgfx_dri3.c
- */
-#define VMW_XA_VERSION_MAJOR_DRI3 2
-#define VMW_XA_VERSION_MINOR_DRI3 3
-
-Bool
-vmwgfx_dri3_init(ScreenPtr screen);
 
 #endif /* _XORG_TRACKER_H_ */
