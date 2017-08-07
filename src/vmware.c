@@ -36,6 +36,7 @@ char rcsId_vmware[] =
 #include "svga_modes.h"
 #include "vmware_bootstrap.h"
 #include "vmware_common.h"
+#include "common_compat.h"
 
 #ifndef HAVE_XORG_SERVER_1_5_0
 #include <xf86_ansic.h>
@@ -1222,12 +1223,14 @@ VMWAREAddDisplayMode(ScrnInfoPtr pScrn,
                      int height)
 {
    DisplayModeRec *mode;
+   char * modeName;
 
    mode = malloc(sizeof(DisplayModeRec));
    memset(mode, 0, sizeof *mode);
 
-   mode->name = malloc(strlen(name) + 1);
-   strcpy(mode->name, name);
+   modeName = malloc(strlen(name) + 1);
+   strcpy(modeName, name);
+   mode->name = modeName;
    mode->status = MODE_OK;
    mode->type = M_T_DEFAULT;
    mode->HDisplay = width;
@@ -1324,7 +1327,7 @@ VMWAREScreenInit(SCREEN_INIT_ARGS_DECL)
 
 
     if (useXinerama && xf86IsOptionSet(options, OPTION_GUI_LAYOUT)) {
-       char *topology = xf86GetOptValString(options, OPTION_GUI_LAYOUT);
+       CONST_ABI_18_0 char *topology = xf86GetOptValString(options, OPTION_GUI_LAYOUT);
        if (topology) {
           pVMWARE->xineramaState =
              VMWAREParseTopologyString(pScrn, topology,
@@ -1332,11 +1335,11 @@ VMWAREScreenInit(SCREEN_INIT_ARGS_DECL)
 
          pVMWARE->xineramaStatic = pVMWARE->xineramaState != NULL;
 
-         free(topology);
+         free((void *)topology);
        }
     } else if (useXinerama &&
 	       xf86IsOptionSet(options, OPTION_STATIC_XINERAMA)) {
-       char *topology = xf86GetOptValString(options, OPTION_STATIC_XINERAMA);
+       CONST_ABI_18_0 char *topology = xf86GetOptValString(options, OPTION_STATIC_XINERAMA);
        if (topology) {
           pVMWARE->xineramaState =
              VMWAREParseTopologyString(pScrn, topology,
@@ -1345,7 +1348,7 @@ VMWAREScreenInit(SCREEN_INIT_ARGS_DECL)
 
          pVMWARE->xineramaStatic = pVMWARE->xineramaState != NULL;
 
-         free(topology);
+         free((void *)topology);
        }
     }
 

@@ -68,6 +68,7 @@
 #include "../src/vmware_bootstrap.h"
 #include "../src/vmware_common.h"
 #include "vmwgfx_hosted.h"
+#include "common_compat.h"
 
 /*
  * We can't incude svga_types.h due to conflicting types for Bool.
@@ -410,23 +411,23 @@ vmwgfx_pre_init_mode(ScrnInfoPtr pScrn, int flags)
     }
 
     if (xf86IsOptionSet(ms->Options, OPTION_GUI_LAYOUT)) {
-	char *topology =
+	CONST_ABI_18_0 char *topology =
 	    xf86GetOptValString(ms->Options, OPTION_GUI_LAYOUT);
 
 	ret = FALSE;
 	if (topology) {
 	    ret = vmwgfx_set_topology(pScrn, topology, "gui");
-	    free(topology);
+	    free((void *)topology);
 	}
 
     } else if (xf86IsOptionSet(ms->Options, OPTION_STATIC_XINERAMA)) {
-	char *topology =
+	CONST_ABI_18_0 char *topology =
 	    xf86GetOptValString(ms->Options, OPTION_STATIC_XINERAMA);
 
 	ret = FALSE;
 	if (topology) {
 	    ret = vmwgfx_set_topology(pScrn, topology, "static Xinerama");
-	    free(topology);
+	    free((void *)topology);
 	}
     }
 
