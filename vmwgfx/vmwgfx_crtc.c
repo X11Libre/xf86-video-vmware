@@ -243,8 +243,10 @@ crtc_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
      * Intel wrote the crtc code, let's do what the xf86-video-intel driver
      * does.
      */
+#if (GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 23)
     if (pScreen)
 	xf86_reload_cursors(pScreen);
+#endif
 
     return TRUE;
 }
