@@ -1,9 +1,9 @@
 
 if BUILD_VMWGFX
 noinst_LTLIBRARIES = libvmwgfx.la
-libvmwgfx_la_CFLAGS = $(CWARNFLAGS) $(XORG_CFLAGS) @LIBDRM_CFLAGS@ @XATRACKER_CFLAGS@ -I$(top_srcdir)/src -I$(top_srcdir)/saa
+libvmwgfx_la_CFLAGS = $(CWARNFLAGS) $(XORG_CFLAGS) @LIBDRM_CFLAGS@ @XATRACKER_CFLAGS@ @LIBUDEV_CFLAGS@ -I$(top_srcdir)/src -I$(top_srcdir)/saa
 libvmwgfx_la_LIBADD = @LIBDRM_LIBS@ $(top_builddir)/saa/libsaa.la\
-	@XATRACKER_LIBS@
+	@XATRACKER_LIBS@ @LIBUDEV_LIBS@
 libvmwgfx_la_DEPENDENCIES = $(top_builddir)/saa/libsaa.la
 
 libvmwgfx_la_SOURCES = \
