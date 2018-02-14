@@ -82,6 +82,10 @@
 
 #define VMWARE_NAME "vmware"
 #define VMWARE_DRIVER_NAME "vmware"
+
+static char vmware_name[] = VMWARE_NAME;
+static char vmware_driver_name[] = VMWARE_DRIVER_NAME;
+
 #define VMWARE_DRIVER_VERSION \
    (PACKAGE_VERSION_MAJOR * 65536 + PACKAGE_VERSION_MINOR * 256 + PACKAGE_VERSION_PATCHLEVEL)
 #define VMWARE_DRIVER_VERSION_STRING \
@@ -255,8 +259,10 @@ VMwarePreinitStub(ScrnInfoPtr pScrn, int flags)
     if (pciInfo == NULL)
         return FALSE;
 
-    pScrn->chipset = (char*)xf86TokenToString(VMWAREChipsets,
-					      DEVICE_ID(pciInfo));
+    pScrn->chipset = xstrdup(xf86TokenToString(VMWAREChipsets,
+					       DEVICE_ID(pciInfo)));
+    if (pScrn->chipset == NULL)
+	return FALSE;
 
     return (*pScrn->PreInit)(pScrn, flags);
 };
@@ -274,8 +280,8 @@ VMwarePciProbe (DriverPtr           drv,
                                NULL, NULL, NULL, NULL, NULL);
     if (scrn != NULL) {
         scrn->driverVersion = VMWARE_DRIVER_VERSION;
-        scrn->driverName = VMWARE_DRIVER_NAME;
-        scrn->name = VMWARE_NAME;
+        scrn->driverName = vmware_driver_name;
+        scrn->name = vmware_name;
         scrn->Probe = NULL;
     }
 
@@ -509,7 +515,7 @@ VMWareDriverFunc(ScrnInfoPtr pScrn,
 
 _X_EXPORT DriverRec vmware = {
     VMWARE_DRIVER_VERSION,
-    VMWARE_DRIVER_NAME,
+    vmware_driver_name,
     VMWAREIdentify,
 #if XSERVER_LIBPCIACCESS
     NULL,

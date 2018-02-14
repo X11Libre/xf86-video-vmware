@@ -32,6 +32,7 @@
 #include "vmwgfx_driver.h"
 #include "vmwgfx_drmi.h"
 #include "vmwgfx_saa.h"
+#include "../src/common_compat.h"
 
 #include <xf86xv.h>
 #include <X11/extensions/Xv.h>
@@ -40,7 +41,9 @@
 #include <xa_context.h>
 #include <math.h>
 
-/*XXX get these from pipe's texture limits */
+static CONST_ABI_16_0 char xv_adapt_name[] = "XA G3D Textured Video";
+
+/*Xxx get these from pipe's texture limits */
 #define IMAGE_MAX_WIDTH		2048
 #define IMAGE_MAX_HEIGHT	2048
 
@@ -71,13 +74,18 @@ static const float bt_709[] = {
 };
 
 static Atom xvBrightness, xvContrast, xvSaturation, xvHue;
+static CONST_ABI_16_TO_19 char xv_brightness_name[] = "XV_BRIGHTNESS";
+static CONST_ABI_16_TO_19 char xv_contrast_name[] = "XV_CONTRAST";
+static CONST_ABI_16_TO_19 char xv_saturation_name[] = "XV_SATURATION";
+static CONST_ABI_16_TO_19 char xv_hue_name[] = "XV_HUE";
+static CONST_ABI_16_TO_19 char xv_image_name[] = "XV_IMAGE";
 
 #define NUM_TEXTURED_ATTRIBUTES 4
 static const XF86AttributeRec TexturedAttributes[NUM_TEXTURED_ATTRIBUTES] = {
-    {XvSettable | XvGettable, -1000, 1000, "XV_BRIGHTNESS"},
-    {XvSettable | XvGettable, -1000, 1000, "XV_CONTRAST"},
-    {XvSettable | XvGettable, -1000, 1000, "XV_SATURATION"},
-    {XvSettable | XvGettable, -1000, 1000, "XV_HUE"}
+    {XvSettable | XvGettable, -1000, 1000, xv_brightness_name},
+    {XvSettable | XvGettable, -1000, 1000, xv_contrast_name},
+    {XvSettable | XvGettable, -1000, 1000, xv_saturation_name},
+    {XvSettable | XvGettable, -1000, 1000, xv_hue_name}
 };
 
 #define NUM_FORMATS 3
@@ -88,7 +96,7 @@ static XF86VideoFormatRec Formats[NUM_FORMATS] = {
 static XF86VideoEncodingRec DummyEncoding[1] = {
    {
       0,
-      "XV_IMAGE",
+      xv_image_name,
       IMAGE_MAX_WIDTH, IMAGE_MAX_HEIGHT,
       {1, 1}
    }
@@ -943,7 +951,7 @@ xorg_setup_textured_adapter(ScreenPtr pScreen)
 
    adapt->type = XvWindowMask | XvInputMask | XvImageMask;
    adapt->flags = 0;
-   adapt->name = "XA G3D Textured Video";
+   adapt->name = xv_adapt_name;
    adapt->nEncodings = 1;
    adapt->pEncodings = DummyEncoding;
    adapt->nFormats = NUM_FORMATS;
