@@ -623,10 +623,12 @@ drv_pre_init(ScrnInfoPtr pScrn, int flags)
 	goto out_modes;
     }
 
+#ifdef DRI3
     if (!xf86LoadSubModule(pScrn, "dri3")) {
 	xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "Failed to load dri3 module.\n");
 	goto out_modes;
     }
+#endif
 
     return TRUE;
 
@@ -1094,7 +1096,9 @@ drv_screen_init(SCREEN_INIT_ARGS_DECL)
     }
 
     ms->dri2_available = FALSE;
+#ifdef DRI3
     ms->dri3_available = FALSE;
+#endif
     if (ms->enable_dri) {
 	if (ms->xat) {
 	    ms->dri2_available = xorg_dri2_init(pScreen);
