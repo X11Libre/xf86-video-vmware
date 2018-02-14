@@ -131,11 +131,21 @@ vmwareReadReg(VMWAREPtr pVMWARE, int index)
      * Block SIGIO for the duration, so we don't get interrupted after the
      * outl but before the inl by a mouse move (which write to our registers).
      */
-    int oldsigio, ret;
+    int ret;
+#if (GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 22)
+    int oldsigio;
+    
     oldsigio = xf86BlockSIGIO();
+#else
+    input_lock();
+#endif
     outl(pVMWARE->indexReg, index);
     ret = inl(pVMWARE->valueReg);
+#if (GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 22)
     xf86UnblockSIGIO(oldsigio);
+#else
+    input_unlock();
+#endif
     return ret;
 }
 
@@ -146,11 +156,19 @@ vmwareWriteReg(VMWAREPtr pVMWARE, int index, CARD32 value)
      * Block SIGIO for the duration, so we don't get interrupted in between
      * the outls by a mouse move (which write to our registers).
      */
+#if (GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 22)
     int oldsigio;
     oldsigio = xf86BlockSIGIO();
+#else
+    input_lock();
+#endif
     outl(pVMWARE->indexReg, index);
     outl(pVMWARE->valueReg, value);
+#if (GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 22)
     xf86UnblockSIGIO(oldsigio);
+#else
+    input_unlock();
+#endif
 }
 
 void
