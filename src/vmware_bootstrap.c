@@ -92,8 +92,10 @@ static char vmware_driver_name[] = VMWARE_DRIVER_NAME;
     VMW_STRING(PACKAGE_VERSION_MAJOR) "." VMW_STRING(PACKAGE_VERSION_MINOR) \
     "." VMW_STRING(PACKAGE_VERSION_PATCHLEVEL)
 
+#if !XSERVER_LIBPCIACCESS
 static const char VMWAREBuildStr[] = "VMware Guest X Server "
     VMWARE_DRIVER_VERSION_STRING " - build=$Name$\n";
+#endif
 
 /*
  * Standard four digit version string expected by VMware Tools installer.
