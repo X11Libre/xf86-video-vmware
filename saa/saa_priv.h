@@ -59,7 +59,7 @@
 #include "glyphstr.h"
 #endif
 #include "damage.h"
-#include "common_compat.h"
+#include "../src/common_compat.h"
 
 #define SAA_INVALID_ADDRESS \
   ((void *) ((unsigned long) 0xFFFFFFFF - 1024*1024))
