@@ -34,6 +34,7 @@
 #endif
 
 #include <unistd.h>
+#include <fcntl.h>
 #include "xorg-server.h"
 #include "xf86.h"
 #include "xf86_OSproc.h"
@@ -1033,7 +1034,29 @@ drv_screen_init(SCREEN_INIT_ARGS_DECL)
     vmw_ctrl_ext_init(pScrn);
 
     if (ms->accelerate_render) {
+	/*
+	 * Some versions of the Gallium loader close our drm file
+	 * descriptor if xa_tracker_create() fails (typically 2D VMs.)
+	 * While this is mostly fixed everywhere we implement a
+	 * workaround to avoid tracking down the same bug again and again
+	 * on those setups where this is not fixed in mesa.
+	 */
+
+	int tmp_fd = dup(ms->fd);
+	long flags = fcntl(ms->fd, F_GETFD);
+
 	ms->xat = xa_tracker_create(ms->fd);
+	if (fcntl(ms->fd, F_GETFD) == -1) {
+	    if (tmp_fd == -1 || flags == -1 || fcntl(tmp_fd, F_SETFD, flags)) {
+		xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+			   "XA closed our DRM file descriptor. Giving up.\n");
+		return FALSE;
+	    }
+	    ms->fd = tmp_fd;
+	} else {
+	    close(tmp_fd);
+	}
+	    
 	if (!ms->xat) {
 	    xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
 		       "Failed to initialize Gallium3D Xa. "
