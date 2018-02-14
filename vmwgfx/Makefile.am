@@ -27,9 +27,6 @@ libvmwgfx_la_SOURCES = \
 	vmwgfx_xa_surface.c \
 	vmwgfx_hosted.c \
 	vmwgfx_hosted.h \
-	vmwgfx_hosted_priv.h \
-	vmwgfx_xmir.c \
-	vmwgfx_xwayland.c \
 	vmwgfx_layout.c \
 	vmwgfx_rr_inlines.h \
 	vmwgfx_dri3.c \
