@@ -606,7 +606,7 @@ copy_packed_data(ScrnInfoPtr pScrn,
     int i;
    struct xa_surface **yuv = port->yuv[port->current_set];
    char *ymap, *vmap, *umap;
-   unsigned char y1, y2, u, v;
+   unsigned char _y1, _y2, u, v;
    int yidx, uidx, vidx;
    int y_array_size = w * h;
    int ret = BadAlloc;
@@ -643,13 +643,13 @@ copy_packed_data(ScrnInfoPtr pScrn,
       for (i = 0; i < y_array_size; i +=2 ) {
          /* extracting two pixels */
          u  = buf[0];
-         y1 = buf[1];
+         _y1 = buf[1];
          v  = buf[2];
-         y2 = buf[3];
+         _y2 = buf[3];
          buf += 4;
 
-         ymap[yidx++] = y1;
-         ymap[yidx++] = y2;
+         ymap[yidx++] = _y1;
+         ymap[yidx++] = _y2;
          umap[uidx++] = u;
          vmap[vidx++] = v;
       }
@@ -657,15 +657,15 @@ copy_packed_data(ScrnInfoPtr pScrn,
    case FOURCC_YUY2:
       for (i = 0; i < y_array_size; i +=2 ) {
          /* extracting two pixels */
-         y1 = buf[0];
+         _y1 = buf[0];
          u  = buf[1];
-         y2 = buf[2];
+         _y2 = buf[2];
          v  = buf[3];
 
          buf += 4;
 
-         ymap[yidx++] = y1;
-         ymap[yidx++] = y2;
+         ymap[yidx++] = _y1;
+         ymap[yidx++] = _y2;
          umap[uidx++] = u;
          vmap[vidx++] = v;
       }
@@ -829,22 +829,22 @@ put_image(ScrnInfoPtr pScrn,
    struct xorg_xv_port_priv *pPriv = (struct xorg_xv_port_priv *) data;
    ScreenPtr pScreen = xf86ScrnToScreen(pScrn);
    PixmapPtr pPixmap;
-   INT32 x1, x2, y1, y2;
+   INT32 x1, x2, _y1, _y2;
    BoxRec dstBox;
    int ret;
 
    /* Clip */
    x1 = src_x;
    x2 = src_x + src_w;
-   y1 = src_y;
-   y2 = src_y + src_h;
+   _y1 = src_y;
+   _y2 = src_y + src_h;
 
    dstBox.x1 = drw_x;
    dstBox.x2 = drw_x + drw_w;
    dstBox.y1 = drw_y;
    dstBox.y2 = drw_y + drw_h;
 
-   if (!xf86XVClipVideoHelper(&dstBox, &x1, &x2, &y1, &y2, clipBoxes,
+   if (!xf86XVClipVideoHelper(&dstBox, &x1, &x2, &_y1, &_y2, clipBoxes,
 			      width, height))
       return Success;
 

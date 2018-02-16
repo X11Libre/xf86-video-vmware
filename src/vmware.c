@@ -125,7 +125,7 @@ VMWAREFreeRec(ScrnInfoPtr pScrn)
 }
 
 CARD32
-vmwareReadReg(VMWAREPtr pVMWARE, int index)
+vmwareReadReg(VMWAREPtr pVMWARE, int rIndex)
 {
     /*
      * Block SIGIO for the duration, so we don't get interrupted after the
@@ -139,7 +139,7 @@ vmwareReadReg(VMWAREPtr pVMWARE, int index)
 #else
     input_lock();
 #endif
-    outl(pVMWARE->indexReg, index);
+    outl(pVMWARE->indexReg, rIndex);
     ret = inl(pVMWARE->valueReg);
 #if (GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 22)
     xf86UnblockSIGIO(oldsigio);
@@ -150,7 +150,7 @@ vmwareReadReg(VMWAREPtr pVMWARE, int index)
 }
 
 void
-vmwareWriteReg(VMWAREPtr pVMWARE, int index, CARD32 value)
+vmwareWriteReg(VMWAREPtr pVMWARE, int wIndex, CARD32 value)
 {
     /*
      * Block SIGIO for the duration, so we don't get interrupted in between
@@ -162,7 +162,7 @@ vmwareWriteReg(VMWAREPtr pVMWARE, int index, CARD32 value)
 #else
     input_lock();
 #endif
-    outl(pVMWARE->indexReg, index);
+    outl(pVMWARE->indexReg, wIndex);
     outl(pVMWARE->valueReg, value);
 #if (GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 22)
     xf86UnblockSIGIO(oldsigio);

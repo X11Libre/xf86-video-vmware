@@ -180,7 +180,7 @@ drv_free_rec(ScrnInfoPtr pScrn)
 }
 
 static void
-drv_probe_ddc(ScrnInfoPtr pScrn, int index)
+drv_probe_ddc(ScrnInfoPtr pScrn, int _index)
 {
     ConfiguredMonitor = NULL;
 }
@@ -919,42 +919,42 @@ static void drv_load_palette(ScrnInfoPtr pScrn, int numColors,
 {
     xf86CrtcConfigPtr xf86_config = XF86_CRTC_CONFIG_PTR(pScrn);
     modesettingPtr ms = modesettingPTR(pScrn);
-    int index, j, i;
+    int _index, j, i;
     int c;
 
     switch(pScrn->depth) {
     case 15:
 	for (i = 0; i < numColors; i++) {
-	    index = indices[i];
+	    _index = indices[i];
 	    for (j = 0; j < 8; j++) {
-		ms->lut_r[index * 8 + j] = colors[index].red << 8;
-		ms->lut_g[index * 8 + j] = colors[index].green << 8;
-		ms->lut_b[index * 8 + j] = colors[index].blue << 8;
+		ms->lut_r[_index * 8 + j] = colors[_index].red << 8;
+		ms->lut_g[_index * 8 + j] = colors[_index].green << 8;
+		ms->lut_b[_index * 8 + j] = colors[_index].blue << 8;
 	    }
 	}
 	break;
     case 16:
 	for (i = 0; i < numColors; i++) {
-	    index = indices[i];
+	    _index = indices[i];
 
-	    if (index < 32) {
+	    if (_index < 32) {
 		for (j = 0; j < 8; j++) {
-		    ms->lut_r[index * 8 + j] = colors[index].red << 8;
-		    ms->lut_b[index * 8 + j] = colors[index].blue << 8;
+		    ms->lut_r[_index * 8 + j] = colors[_index].red << 8;
+		    ms->lut_b[_index * 8 + j] = colors[_index].blue << 8;
 		}
 	    }
 
 	    for (j = 0; j < 4; j++) {
-		ms->lut_g[index * 4 + j] = colors[index].green << 8;
+		ms->lut_g[_index * 4 + j] = colors[_index].green << 8;
 	    }
 	}
 	break;
     default:
 	for (i = 0; i < numColors; i++) {
-	    index = indices[i];
-	    ms->lut_r[index] = colors[index].red << 8;
-	    ms->lut_g[index] = colors[index].green << 8;
-	    ms->lut_b[index] = colors[index].blue << 8;
+	    _index = indices[i];
+	    ms->lut_r[_index] = colors[_index].red << 8;
+	    ms->lut_g[_index] = colors[_index].green << 8;
+	    ms->lut_b[_index] = colors[_index].blue << 8;
 	}
 	break;
     }
