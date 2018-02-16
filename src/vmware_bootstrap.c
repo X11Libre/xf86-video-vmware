@@ -80,10 +80,9 @@
 #define VMW_INNERSTRINGIFY(s) #s
 #define VMW_STRING(str) VMW_INNERSTRINGIFY(str)
 
-#define VMWARE_NAME "vmware"
 #define VMWARE_DRIVER_NAME "vmware"
+#define VMWARE_NAME "vmware"
 
-static char vmware_name[] = VMWARE_NAME;
 static char vmware_driver_name[] = VMWARE_DRIVER_NAME;
 
 #define VMWARE_DRIVER_VERSION \
@@ -95,6 +94,8 @@ static char vmware_driver_name[] = VMWARE_DRIVER_NAME;
 #if !XSERVER_LIBPCIACCESS
 static const char VMWAREBuildStr[] = "VMware Guest X Server "
     VMWARE_DRIVER_VERSION_STRING " - build=$Name$\n";
+#else
+static char vmware_name[] = VMWARE_NAME;
 #endif
 
 /*

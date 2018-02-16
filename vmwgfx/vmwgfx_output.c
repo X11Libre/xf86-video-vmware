@@ -33,7 +33,6 @@
 
 #include "xorg-server.h"
 #include <xf86drm.h>
-#include <xf86drmMode.h>
 #include <xf86str.h>
 #include <randrstr.h>
 #include <xf86Crtc.h>
