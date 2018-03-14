@@ -33,5 +33,9 @@ xf86SaveModeContents(DisplayModePtr intern, const DisplayModeRec *mode)
 }
 #endif
 
+#ifndef fbGetRotatedPixmap
+#define fbGetRotatedPixmap(_pGC) NULL
+#endif
+
 #endif
 
