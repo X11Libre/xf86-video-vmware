@@ -172,6 +172,7 @@ crtc_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
 
     connector_id = xorg_output_get_id(output);
 
+    memset(&drm_mode, 0, sizeof(drm_mode));
     drm_mode.clock = mode->Clock;
     drm_mode.hdisplay = mode->HDisplay;
     drm_mode.hsync_start = mode->HSyncStart;
