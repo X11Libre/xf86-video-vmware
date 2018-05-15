@@ -240,7 +240,7 @@ vmw_ctrl_ext_init(ScrnInfoPtr pScrn);
  * vmwgfx_dri3.c
  */
 #define VMW_XA_VERSION_MAJOR_DRI3 2
-#define VMW_XA_VERSION_MINOR_DRI3 3
+#define VMW_XA_VERSION_MINOR_DRI3 4
 
 Bool
 vmwgfx_dri3_init(ScreenPtr screen);
