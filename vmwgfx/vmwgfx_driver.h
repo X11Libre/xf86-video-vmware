@@ -71,6 +71,12 @@
 
 #define VMWGFX_DRI_DEVICE_LEN 80
 
+#undef VMWGFX_LIBDRM_DEVICENAME
+#if defined(HAVE_LIBDRM_2_4_96) || \
+  (defined(HAVE_LIBDRM_2_4_74) && !defined(__linux__))
+#define VMWGFX_LIBDRM_DEVICENAME
+#endif
+
 typedef struct
 {
     int lastInstance;
@@ -145,7 +151,11 @@ typedef struct _modesettingRec
     struct vmwgfx_hosted *hosted;
 #ifdef DRI2
     Bool dri2_available;
+#ifdef VMWGFX_LIBDRM_DEVICENAME
+    char *dri2_device_name;
+#else
     char dri2_device_name[VMWGFX_DRI_DEVICE_LEN];
+#endif
 #endif
 #ifdef HAVE_LIBUDEV
     struct udev_monitor *uevent_monitor;

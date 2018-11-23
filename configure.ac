@@ -132,6 +132,16 @@ if test x$BUILD_VMWGFX = xyes; then
 	PKG_CHECK_EXISTS([libdrm >= 2.4.38],
 			 [AC_DEFINE([HAVE_LIBDRM_2_4_38], 1,
 			 [Has version 2.4.38 or greater of libdrm])])
+#
+# Check for drmGetDeviceNameFromFd2. On linux we need
+# 2.4.96 for compatibility with the standalone vmwgfx driver
+#
+	PKG_CHECK_EXISTS([libdrm >= 2.4.74],
+			 [AC_DEFINE([HAVE_LIBDRM_2_4_74], 1,
+			 [Has version 2.4.74 or greater of libdrm])])
+	PKG_CHECK_EXISTS([libdrm >= 2.4.96],
+			 [AC_DEFINE([HAVE_LIBDRM_2_4_96], 1,
+			 [Has version 2.4.96 or greater of libdrm])])
 fi
 
 DRIVER_NAME=vmware
