@@ -258,15 +258,12 @@ vmwgfx_overlay_port_create(int drm_fd, ScreenPtr pScreen)
 }
 
 void
-vmw_video_free_adaptor(XF86VideoAdaptorPtr adaptor, Bool free_ports)
+vmw_video_free_adaptor(XF86VideoAdaptorPtr adaptor)
 {
-    if (free_ports) {
-	int i;
+    int i;
 
-	for(i=0; i<adaptor->nPorts; ++i) {
-	    free(adaptor->pPortPrivates[i].ptr);
-	}
-    }
+    for (i = 0; i < adaptor->nPorts; ++i)
+	free(adaptor->pPortPrivates[i].ptr);
 
     free(adaptor->pPortPrivates);
     xf86XVFreeVideoAdaptorRec(adaptor);

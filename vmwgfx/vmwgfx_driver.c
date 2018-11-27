@@ -1327,6 +1327,8 @@ drv_close_screen(CLOSE_SCREEN_ARGS_DECL)
         pScrn->LeaveVT(VT_FUNC_ARGS);
 
     vmwgfx_uevent_fini(pScrn, ms);
+    vmw_xv_close(pScreen);
+
     pScrn->vtSema = FALSE;
 
     vmwgfx_unwrap(ms, pScrn, EnterVT);

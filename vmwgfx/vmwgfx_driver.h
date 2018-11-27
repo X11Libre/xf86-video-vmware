@@ -157,6 +157,11 @@ typedef struct _modesettingRec
     Bool xa_dri3;
     Bool dri3_available;
 #endif
+
+    /* Video */
+    XF86VideoAdaptorPtr overlay;
+    XF86VideoAdaptorPtr textured;
+
 } modesettingRec, *modesettingPtr;
 
 #define modesettingPTR(p) ((modesettingPtr)((p)->driverPrivate))
@@ -231,7 +236,9 @@ xorg_xv_init(ScreenPtr pScreen);
 XF86VideoAdaptorPtr
 vmw_video_init_adaptor(ScrnInfoPtr pScrn);
 void
-vmw_video_free_adaptor(XF86VideoAdaptorPtr adaptor, Bool free_ports);
+vmw_video_free_adaptor(XF86VideoAdaptorPtr adaptor);
+void
+vmw_xv_close(ScreenPtr pScreen);
 
 void
 vmw_ctrl_ext_init(ScrnInfoPtr pScrn);
