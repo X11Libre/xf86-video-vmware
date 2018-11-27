@@ -642,6 +642,7 @@ xorg_output_init(ScrnInfoPtr pScrn)
 	if (drm_encoder) {
 	    output->possible_crtcs = drm_encoder->possible_crtcs;
 	    output->possible_clones = drm_encoder->possible_clones;
+	    drmModeFreeEncoder(drm_encoder);
 	} else {
 	    output->possible_crtcs = 0;
 	    output->possible_clones = 0;
