@@ -74,6 +74,7 @@ struct saa_screen_priv {
     struct saa_driver *driver;
     CreateGCProcPtr saved_CreateGC;
     CloseScreenProcPtr saved_CloseScreen;
+    CloseScreenProcPtr saved_early_CloseScreen;
     GetImageProcPtr saved_GetImage;
     GetSpansProcPtr saved_GetSpans;
     CreatePixmapProcPtr saved_CreatePixmap;
@@ -125,6 +126,15 @@ do {								\
 
 #define saa_unwrap(priv, real, mem) {\
 	(real)->mem = (priv)->saved_##mem;	\
+}
+
+#define saa_wrap_early(priv, real, mem, func) {		\
+	(priv)->saved_early_##mem = (real)->mem;	\
+	(real)->mem = func;				\
+}
+
+#define saa_unwrap_early(priv, real, mem) {		\
+	(real)->mem = (priv)->saved_early_##mem;	\
 }
 
 #define saa_swap(priv, real, mem) {\
