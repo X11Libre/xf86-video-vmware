@@ -1314,6 +1314,7 @@ drv_close_screen(CLOSE_SCREEN_ARGS_DECL)
 {
     ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
     modesettingPtr ms = modesettingPTR(pScrn);
+    Bool ret;
 
     if (ms->cursor) {
        FreeCursor(ms->cursor, None);
@@ -1339,10 +1340,12 @@ drv_close_screen(CLOSE_SCREEN_ARGS_DECL)
     vmwgfx_unwrap(ms, pScreen, BlockHandler);
     vmwgfx_unwrap(ms, pScreen, CreateScreenResources);
 
+    ret = (*pScreen->CloseScreen) (CLOSE_SCREEN_ARGS);
+    
     if (ms->xat)
 	xa_tracker_destroy(ms->xat);
 
-    return (*pScreen->CloseScreen) (CLOSE_SCREEN_ARGS);
+    return ret;
 }
 
 static ModeStatus
