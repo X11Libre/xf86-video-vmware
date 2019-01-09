@@ -44,6 +44,7 @@
 
 #include "svga3d_reg.h"
 #include "vmwgfx_driver.h"
+#include "common_compat.h"
 
 static int
 vmwgfx_fence_wait(int drm_fd, uint32_t handle, Bool unref)
@@ -138,6 +139,7 @@ vmwgfx_present(int drm_fd, uint32_t fb_id, unsigned int dst_x,
 {
     BoxPtr clips = REGION_RECTS(region);
     unsigned int num_clips = REGION_NUM_RECTS(region);
+    unsigned int alloc_clips = min(num_clips, DRM_MODE_FB_DIRTY_MAX_CLIPS);
     struct drm_vmw_present_arg arg;
     unsigned int i;
     struct drm_vmw_rect *rects, *r;
@@ -146,35 +148,42 @@ vmwgfx_present(int drm_fd, uint32_t fb_id, unsigned int dst_x,
     if (num_clips == 0)
 	return 0;
 
-    rects = calloc(num_clips, sizeof(*rects));
+    rects = malloc(alloc_clips * sizeof(*rects));
     if (!rects) {
 	LogMessage(X_ERROR, "Failed to alloc cliprects for "
 		   "present.\n");
 	return -1;
     }
 
-    memset(&arg, 0, sizeof(arg));
-    arg.fb_id = fb_id;
-    arg.sid = handle;
-    arg.dest_x = dst_x;
-    arg.dest_y = dst_y;
-    arg.num_clips = num_clips;
-    arg.clips_ptr = (unsigned long) rects;
+    while (num_clips > 0) {
+	unsigned int cur_clips = min(num_clips, DRM_MODE_FB_DIRTY_MAX_CLIPS);
 
-    for (i = 0, r = rects; i < num_clips; ++i, ++r, ++clips) {
-	r->x = clips->x1;
-	r->y = clips->y1;
-	r->w = clips->x2 - clips->x1;
-	r->h = clips->y2 - clips->y1;
-    }
+	memset(&arg, 0, sizeof(arg));
+	memset(rects, 0, alloc_clips * sizeof(*rects));
+	arg.fb_id = fb_id;
+	arg.sid = handle;
+	arg.dest_x = dst_x;
+	arg.dest_y = dst_y;
+	arg.num_clips = cur_clips;
+	arg.clips_ptr = (unsigned long) rects;
 
-    ret = drmCommandWrite(drm_fd, DRM_VMW_PRESENT, &arg, sizeof(arg));
-    if (ret) {
-	LogMessage(X_ERROR, "Present error %s.\n", strerror(-ret));
+	for (i = 0, r = rects; i < cur_clips; ++i, ++r, ++clips) {
+	    r->x = clips->x1;
+	    r->y = clips->y1;
+	    r->w = clips->x2 - clips->x1;
+	    r->h = clips->y2 - clips->y1;
+	}
+
+	ret = drmCommandWrite(drm_fd, DRM_VMW_PRESENT, &arg, sizeof(arg));
+	if (ret)
+	    LogMessage(X_ERROR, "Present error %s.\n", strerror(-ret));
+
+	num_clips -= cur_clips;
     }
 
     free(rects);
-    return ((ret != 0) ? -1 : 0);
+
+    return 0;
 }
 
 
