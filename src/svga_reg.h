@@ -302,6 +302,7 @@ struct SVGAGuestPtr {
    uint32 offset;
 } SVGAGuestPtr;
 
+#define SVGA_CB_MAX_COMMAND_SIZE (32 * 1024) /* 32 KB */
 
 /*
  * SVGAGMRImageFormat --

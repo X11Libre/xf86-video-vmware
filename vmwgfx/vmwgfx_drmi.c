@@ -293,93 +293,102 @@ vmwgfx_dma(int host_x, int host_y,
     struct drm_vmw_execbuf_arg arg;
     struct drm_vmw_fence_rep rep;
     int ret;
-    unsigned int size;
     unsigned i;
     SVGA3dCopyBox *cb;
     SVGA3dCmdSurfaceDMASuffix *suffix;
     SVGA3dCmdSurfaceDMA *body;
     struct vmwgfx_int_dmabuf *ibuf = vmwgfx_int_dmabuf(buf);
-
     struct {
 	SVGA3dCmdHeader header;
 	SVGA3dCmdSurfaceDMA body;
 	SVGA3dCopyBox cb;
     } *cmd;
+    static unsigned int max_clips =
+	(SVGA_CB_MAX_COMMAND_SIZE - sizeof(*cmd) - sizeof(*suffix)) /
+	sizeof(cmd->cb) + 1;
 
-    if (num_clips == 0)
-	return 0;
+    while (num_clips > 0) {
+	unsigned int size;
+	unsigned int cur_clips;
 
-    size = sizeof(*cmd) + (num_clips - 1) * sizeof(cmd->cb) +
-	sizeof(*suffix);
-    cmd = malloc(size);
-    if (!cmd)
-	return -1;
+	cur_clips = min(num_clips, max_clips);
+	size = sizeof(*cmd) + (cur_clips - 1) * sizeof(cmd->cb) +
+	    sizeof(*suffix);
 
-    cmd->header.id = SVGA_3D_CMD_SURFACE_DMA;
-    cmd->header.size = sizeof(cmd->body) + num_clips * sizeof(cmd->cb) +
-	sizeof(*suffix);
-    cb = &cmd->cb;
+	cmd = calloc(1, size);
+	if (!cmd)
+	    return -1;
 
-    suffix = (SVGA3dCmdSurfaceDMASuffix *) &cb[num_clips];
-    suffix->suffixSize = sizeof(*suffix);
-    suffix->maximumOffset = (uint32_t) -1;
-    suffix->flags.discard = 0;
-    suffix->flags.unsynchronized = 0;
-    suffix->flags.reserved = 0;
+	cmd->header.id = SVGA_3D_CMD_SURFACE_DMA;
+	cmd->header.size = sizeof(cmd->body) + cur_clips * sizeof(cmd->cb) +
+	    sizeof(*suffix);
+	cb = &cmd->cb;
 
-    body = &cmd->body;
-    body->guest.ptr.gmrId = buf->gmr_id;
-    body->guest.ptr.offset = buf->gmr_offset;
-    body->guest.pitch = buf_pitch;
-    body->host.sid = surface_handle;
-    body->host.face = 0;
-    body->host.mipmap = 0;
+	suffix = (SVGA3dCmdSurfaceDMASuffix *) &cb[cur_clips];
+	suffix->suffixSize = sizeof(*suffix);
+	suffix->maximumOffset = (uint32_t) -1;
+	suffix->flags.discard = 0;
+	suffix->flags.unsynchronized = 0;
+	suffix->flags.reserved = 0;
 
-    body->transfer =  (to_surface ? SVGA3D_WRITE_HOST_VRAM :
-		       SVGA3D_READ_HOST_VRAM);
+	body = &cmd->body;
+	body->guest.ptr.gmrId = buf->gmr_id;
+	body->guest.ptr.offset = buf->gmr_offset;
+	body->guest.pitch = buf_pitch;
+	body->host.sid = surface_handle;
+	body->host.face = 0;
+	body->host.mipmap = 0;
 
+	body->transfer = (to_surface ? SVGA3D_WRITE_HOST_VRAM :
+			  SVGA3D_READ_HOST_VRAM);
 
-    for (i=0; i < num_clips; i++, cb++, clips++) {
-	cb->x = (uint16_t) clips->x1 + host_x;
-	cb->y = (uint16_t) clips->y1 + host_y;
-	cb->z = 0;
-	cb->srcx = (uint16_t) clips->x1;
-	cb->srcy = (uint16_t) clips->y1;
-	cb->srcz = 0;
-	cb->w = (uint16_t) (clips->x2 - clips->x1);
-	cb->h = (uint16_t) (clips->y2 - clips->y1);
-	cb->d = 1;
+	for (i = 0; i < cur_clips; i++, cb++, clips++) {
+	    cb->x = (uint16_t) clips->x1 + host_x;
+	    cb->y = (uint16_t) clips->y1 + host_y;
+	    cb->z = 0;
+	    cb->srcx = (uint16_t) clips->x1;
+	    cb->srcy = (uint16_t) clips->y1;
+	    cb->srcz = 0;
+	    cb->w = (uint16_t) (clips->x2 - clips->x1);
+	    cb->h = (uint16_t) (clips->y2 - clips->y1);
+	    cb->d = 1;
 #if 0
-	LogMessage(X_INFO, "DMA! x: %u y: %u srcx: %u srcy: %u w: %u h: %u %s\n",
-		   cb->x, cb->y, cb->srcx, cb->srcy, cb->w, cb->h,
-		   to_surface ? "to" : "from");
+	    LogMessage(X_INFO, "DMA! x: %u y: %u srcx: %u srcy: %u w: %u h: %u %s\n",
+		       cb->x, cb->y, cb->srcx, cb->srcy, cb->w, cb->h,
+		       to_surface ? "to" : "from");
 #endif
 
-    }
+	}
 
-    memset(&arg, 0, sizeof(arg));
-    memset(&rep, 0, sizeof(rep));
+	memset(&arg, 0, sizeof(arg));
+	memset(&rep, 0, sizeof(rep));
 
-    rep.error = -EFAULT;
-    arg.fence_rep = ((to_surface) ? 0UL : (unsigned long)&rep);
-    arg.commands = (unsigned long)cmd;
-    arg.command_size = size;
-    arg.throttle_us = 0;
-    arg.version = DRM_VMW_EXECBUF_VERSION;
+	rep.error = -EFAULT;
 
-    ret = drmCommandWrite(ibuf->drm_fd, DRM_VMW_EXECBUF, &arg, sizeof(arg));
-    if (ret) {
-	LogMessage(X_ERROR, "DMA error %s.\n", strerror(-ret));
-    }
+	/* Only require a fence if readback and last batch of cliprects. */
+	arg.fence_rep = ((to_surface && (cur_clips == num_clips)) ?
+			 0UL : (unsigned long) &rep);
+	arg.commands = (unsigned long)cmd;
+	arg.command_size = size;
+	arg.throttle_us = 0;
+	arg.version = DRM_VMW_EXECBUF_VERSION;
 
-    free(cmd);
-
-    if (rep.error == 0) {
-	ret = vmwgfx_fence_wait(ibuf->drm_fd, rep.handle, TRUE);
+	ret = drmCommandWrite(ibuf->drm_fd, DRM_VMW_EXECBUF, &arg, sizeof(arg));
 	if (ret) {
-	    LogMessage(X_ERROR, "DMA from host fence wait error %s.\n",
-		       strerror(-ret));
-	    vmwgfx_fence_unref(ibuf->drm_fd, rep.handle);
+	    LogMessage(X_ERROR, "DMA error %s.\n", strerror(-ret));
+	}
+
+	free(cmd);
+	num_clips -= cur_clips;
+
+	if (rep.error == 0) {
+	    ret = vmwgfx_fence_wait(ibuf->drm_fd, rep.handle, TRUE);
+	    if (ret) {
+		LogMessage(X_ERROR, "DMA from host fence wait error %s.\n",
+			   strerror(-ret));
+		/* vmwgfx_fence_wait() takes care of this if ret == 0. */
+		vmwgfx_fence_unref(ibuf->drm_fd, rep.handle);
+	    }
 	}
     }
 
