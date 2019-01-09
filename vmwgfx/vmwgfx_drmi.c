@@ -82,52 +82,65 @@ vmwgfx_present_readback(int drm_fd, uint32_t fb_id, RegionPtr region)
 {
     BoxPtr clips = REGION_RECTS(region);
     unsigned int num_clips = REGION_NUM_RECTS(region);
+    unsigned int alloc_clips = min(num_clips, DRM_MODE_FB_DIRTY_MAX_CLIPS);
     struct drm_vmw_fence_rep rep;
     struct drm_vmw_present_readback_arg arg;
     int ret;
     unsigned i;
     struct drm_vmw_rect *rects, *r;
 
-    rects = calloc(num_clips, sizeof(*rects));
+    if (num_clips == 0)
+	return 0;
+
+    rects = malloc(alloc_clips * sizeof(*rects));
     if (!rects) {
 	LogMessage(X_ERROR, "Failed to alloc cliprects for "
 		   "present readback.\n");
 	return -1;
     }
 
-    memset(&arg, 0, sizeof(arg));
-    memset(&rep, 0, sizeof(rep));
+    while (num_clips > 0) {
+	unsigned int cur_clips = min(num_clips, DRM_MODE_FB_DIRTY_MAX_CLIPS);
 
-    arg.fb_id = fb_id;
-    arg.num_clips = num_clips;
-    arg.clips_ptr = (unsigned long) rects;
-    arg.fence_rep = (unsigned long) &rep;
-    rep.error = -EFAULT;
+	memset(&arg, 0, sizeof(arg));
+	memset(&rep, 0, sizeof(rep));
+	memset(rects, 0, alloc_clips * sizeof(*rects));
 
-    for (i = 0, r = rects; i < num_clips; ++i, ++r, ++clips) {
-	r->x = clips->x1;
-	r->y = clips->y1;
-	r->w = clips->x2 - clips->x1;
-	r->h = clips->y2 - clips->y1;
-    }
+	arg.fb_id = fb_id;
+	arg.num_clips = cur_clips;
+	arg.clips_ptr = (unsigned long) rects;
 
-    ret = drmCommandWrite(drm_fd, DRM_VMW_PRESENT_READBACK, &arg, sizeof(arg));
-    if (ret)
-	LogMessage(X_ERROR, "Present readback error %s.\n", strerror(-ret));
-    free(rects);
+	/* Only request a fence on the last clip batch */
+	arg.fence_rep = (cur_clips == num_clips) ? (unsigned long) &rep : 0UL;
+	rep.error = -EFAULT;
 
-    /*
-     * Sync to avoid racing with Xorg SW rendering.
-     */
-
-    if (rep.error == 0) {
-	ret = vmwgfx_fence_wait(drm_fd, rep.handle, TRUE);
-	if (ret) {
-	    LogMessage(X_ERROR, "Present readback fence wait error %s.\n",
-		       strerror(-ret));
-	    vmwgfx_fence_unref(drm_fd, rep.handle);
+	for (i = 0, r = rects; i < cur_clips; ++i, ++r, ++clips) {
+	    r->x = clips->x1;
+	    r->y = clips->y1;
+	    r->w = clips->x2 - clips->x1;
+	    r->h = clips->y2 - clips->y1;
 	}
+
+	ret = drmCommandWrite(drm_fd, DRM_VMW_PRESENT_READBACK, &arg,
+			      sizeof(arg));
+	if (ret)
+	    LogMessage(X_ERROR, "Present readback error %s.\n", strerror(-ret));
+
+	/* Sync if we have a fence to avoid racing with Xorg SW rendering. */
+	if (rep.error == 0) {
+	    ret = vmwgfx_fence_wait(drm_fd, rep.handle, TRUE);
+	    if (ret) {
+		LogMessage(X_ERROR, "Present readback fence wait error %s.\n",
+			   strerror(-ret));
+		/* vmwgfx_fence_wait() takes care of this if ret == 0. */
+		vmwgfx_fence_unref(drm_fd, rep.handle);
+	    }
+	}
+
+	num_clips -= cur_clips;
     }
+
+    free(rects);
 
     return 0;
 }
