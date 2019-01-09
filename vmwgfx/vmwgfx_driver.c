@@ -650,26 +650,37 @@ drv_pre_init(ScrnInfoPtr pScrn, int flags)
 static Bool
 vmwgfx_scanout_update(int drm_fd, int fb_id, RegionPtr dirty)
 {
-    unsigned num_cliprects = REGION_NUM_RECTS(dirty);
-    drmModeClip *clip = alloca(num_cliprects * sizeof(drmModeClip));
+    unsigned int num_cliprects = REGION_NUM_RECTS(dirty);
+    unsigned int alloc_cliprects = min(num_cliprects,
+				       DRM_MODE_FB_DIRTY_MAX_CLIPS);
+    drmModeClip *clip = alloca(alloc_cliprects * sizeof(drmModeClip));
     BoxPtr rect = REGION_RECTS(dirty);
     int i, ret;
 
-    if (!num_cliprects)
-	return TRUE;
+    while (num_cliprects > 0) {
+	unsigned int cur_cliprects = min(num_cliprects,
+					 DRM_MODE_FB_DIRTY_MAX_CLIPS);
 
-    for (i = 0; i < num_cliprects; i++, rect++) {
-	clip[i].x1 = rect->x1;
-	clip[i].y1 = rect->y1;
-	clip[i].x2 = rect->x2;
-	clip[i].y2 = rect->y2;
+	memset(clip, 0, alloc_cliprects * sizeof(drmModeClip));
+
+	for (i = 0; i < cur_cliprects; i++, rect++) {
+	    clip[i].x1 = rect->x1;
+	    clip[i].y1 = rect->y1;
+	    clip[i].x2 = rect->x2;
+	    clip[i].y2 = rect->y2;
+	}
+
+	ret = drmModeDirtyFB(drm_fd, fb_id, clip, cur_cliprects);
+	if (ret) {
+	    LogMessage(X_ERROR, "%s: failed to send dirty (%i, %s)\n",
+		       __func__, ret, strerror(-ret));
+	    return FALSE;
+	}
+
+	num_cliprects -= cur_cliprects;
     }
 
-    ret = drmModeDirtyFB(drm_fd, fb_id, clip, num_cliprects);
-    if (ret)
-	LogMessage(X_ERROR, "%s: failed to send dirty (%i, %s)\n",
-		   __func__, ret, strerror(-ret));
-    return (ret == 0);
+    return TRUE;
 }
 
 static Bool

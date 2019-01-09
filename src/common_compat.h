@@ -37,5 +37,9 @@ xf86SaveModeContents(DisplayModePtr intern, const DisplayModeRec *mode)
 #define fbGetRotatedPixmap(_pGC) NULL
 #endif
 
+#ifndef DRM_MODE_FB_DIRTY_MAX_CLIPS
+#define DRM_MODE_FB_DIRTY_MAX_CLIPS 256
+#endif
+
 #endif
 
