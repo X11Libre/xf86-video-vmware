@@ -36,15 +36,15 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <errno.h>
-#include <drm.h>
-#include <xf86drm.h>
-#include <xf86drmMode.h>
 #include <xorg-server.h>
 #include <xf86.h>
 #include <xf86Crtc.h>
 #include <xf86xv.h>
 #include <xa_tracker.h>
 #include <xf86Module.h>
+#include <drm.h>
+#include <xf86drm.h>
+#include <xf86drmMode.h>
 
 #include "../src/compat-api.h"
 #ifdef DRI2

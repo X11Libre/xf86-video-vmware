@@ -29,11 +29,11 @@
 #include <xorgVersion.h>
 #include <mi.h>
 #include <fb.h>
-#include <xf86drmMode.h>
 #include <xa_context.h>
 #include "vmwgfx_saa.h"
 #include "vmwgfx_drmi.h"
 #include "vmwgfx_saa_priv.h"
+#include <xf86drmMode.h>
 
 /*
  * Damage to be added as soon as we attach storage to the pixmap.
