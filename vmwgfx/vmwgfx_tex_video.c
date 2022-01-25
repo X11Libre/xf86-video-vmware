@@ -634,9 +634,16 @@ copy_packed_data(ScrnInfoPtr pScrn,
       yp = buf + offsets[0];
       vp = buf + offsets[1];
       up = buf + offsets[2];
-      memcpy(ymap, yp, w*h);
-      memcpy(vmap, vp, w*h/4);
-      memcpy(umap, up, w*h/4);
+      for (i = 0; i < h; ++i) {
+          memcpy(ymap + w * i, yp, w);
+          yp += pitches[0];
+      }
+      for (i = 0; i < h / 2; ++i) {
+          memcpy(vmap + w * i / 2, vp, w / 2);
+          memcpy(umap + w * i / 2, up, w / 2);
+          vp += pitches[1];
+          up += pitches[2];
+      }
       break;
    }
    case FOURCC_UYVY:
