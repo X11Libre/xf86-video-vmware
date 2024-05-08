@@ -108,7 +108,7 @@ vmwareAddDefaultMode(ScrnInfoPtr pScrn, uint32 dwidth, uint32 dheight)
 	                               sizeof(*dispModeList));
 	}
 
-	dispModeList = xnfcalloc(dispModeCount + 2, sizeof(*dispModeList));
+	dispModeList = XNFcallocarray(dispModeCount + 2, sizeof(*dispModeList));
 	if (!dispModeList)
 	    goto out_err;
 
