@@ -73,7 +73,7 @@ VMWAREGetRec(ScrnInfoPtr pScrn)
     if (pScrn->driverPrivate != NULL) {
         return TRUE;
     }
-    pScrn->driverPrivate = xnfcalloc(sizeof(VMWARERec), 1);
+    pScrn->driverPrivate = XNFcallocarray(sizeof(VMWARERec), 1);
     /* FIXME: Initialize driverPrivate... */
     return TRUE;
 }
@@ -620,7 +620,7 @@ VMWAREPreInit(ScrnInfoPtr pScrn, int flags)
         return FALSE;
     }
 #endif
-    clockRanges = xnfcalloc(sizeof(ClockRange), 1);
+    clockRanges = XNFcallocarray(sizeof(ClockRange), 1);
     clockRanges->next = NULL;
     clockRanges->minClock = 1;
     clockRanges->maxClock = 400000000;
