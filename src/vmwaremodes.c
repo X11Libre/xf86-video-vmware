@@ -95,7 +95,7 @@ vmwareAddDefaultMode(ScrnInfoPtr pScrn, uint32 dwidth, uint32 dheight)
 
 	snprintf(name, sizeof(name), VMW_DEFLT_MODE_NAME, dwidth, dheight);
 
-	dynModeName = xnfstrdup(name);
+	dynModeName = XNFstrdup(name);
 	if (!dynModeName || !pScrn->display)
 	    goto out_err;
 
