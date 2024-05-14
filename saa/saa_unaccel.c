@@ -649,15 +649,10 @@ saa_check_copy_window(WindowPtr pWin, DDXPointRec ptOldOrg, RegionPtr prgnSrc)
 
 #ifdef RENDER
 
-#if (GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) >= 10)
 static void
 saa_src_validate(DrawablePtr pDrawable,
 		 int x,
 		 int y, int width, int height, unsigned int subWindowMode)
-#else
-static void
-saa_src_validate(DrawablePtr pDrawable, int x, int y, int width, int height)
-#endif
 {
     ScreenPtr pScreen = pDrawable->pScreen;
     struct saa_screen_priv *sscreen = saa_screen(pScreen);
@@ -682,9 +677,7 @@ saa_src_validate(DrawablePtr pDrawable, int x, int y, int width, int height)
     if (sscreen->saved_SourceValidate) {
 	saa_swap(sscreen, pScreen, SourceValidate);
 	pScreen->SourceValidate(pDrawable, x, y, width, height
-#if (GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) >= 10)
 				, subWindowMode
-#endif
 	    );
 	saa_swap(sscreen, pScreen, SourceValidate);
     }

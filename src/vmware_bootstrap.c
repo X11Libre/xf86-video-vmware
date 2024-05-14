@@ -36,10 +36,6 @@
 #include "vmware_bootstrap.h"
 #include <stdint.h>
 
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 6
-#include "xf86Resources.h"
-#endif
-
 #ifndef XSERVER_LIBPCIACCESS
 #include "vm_basic_types.h"
 #include "svga_reg.h"
@@ -65,12 +61,6 @@
  */
 #ifndef _X_EXPORT
 #define _X_EXPORT
-#endif
-/*
- * So that the file compiles unmodified when dropped into an xfree source tree.
- */
-#ifndef XORG_VERSION_CURRENT
-#define XORG_VERSION_CURRENT XF86_VERSION_CURRENT
 #endif
 
 /*
@@ -505,10 +495,8 @@ VMWareDriverFunc(ScrnInfoPtr pScrn,
 			      pScrn->yDpi / 2) / pScrn->yDpi;
       }
       return TRUE;
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) >= 18
    case SUPPORTS_SERVER_FDS:
       return TRUE;
-#endif
    default:
       return FALSE;
    }
@@ -531,7 +519,6 @@ _X_EXPORT DriverRec vmware = {
 #if VMWARE_DRIVER_FUNC
     VMWareDriverFunc,
 #endif
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) >= 4
 #if XSERVER_LIBPCIACCESS
     VMwareDeviceMatch,
     VMwarePciProbe,
@@ -539,13 +526,10 @@ _X_EXPORT DriverRec vmware = {
     NULL,
     NULL,
 #endif
-#endif
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) >= 13
 #ifdef XSERVER_PLATFORM_BUS
     VMwarePlatformProbe,
 #else
     NULL,
-#endif
 #endif
 };
 

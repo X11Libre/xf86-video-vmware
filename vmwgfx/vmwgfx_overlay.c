@@ -115,8 +115,8 @@ static XF86ImageRec vmwareVideoImages[] =
     XVIMAGE_UYVY
 };
 
-static CONST_ABI_16_TO_19 char xv_colorkey_name[] = "XV_COLORKEY";
-static CONST_ABI_16_TO_19 char xv_autopaint_name[] = "XV_AUTOPAINT_COLORKEY";
+static char xv_colorkey_name[] = "XV_COLORKEY";
+static char xv_autopaint_name[] = "XV_AUTOPAINT_COLORKEY";
 
 #define VMWARE_VID_NUM_ATTRIBUTES 2
 static XF86AttributeRec vmwareVideoAttributes[] =

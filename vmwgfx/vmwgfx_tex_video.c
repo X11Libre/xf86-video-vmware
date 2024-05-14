@@ -41,7 +41,7 @@
 #include <xa_context.h>
 #include <math.h>
 
-static CONST_ABI_16_0 char xv_adapt_name[] = "XA G3D Textured Video";
+static const char xv_adapt_name[] = "XA G3D Textured Video";
 
 /*Xxx get these from pipe's texture limits */
 #define IMAGE_MAX_WIDTH		2048
@@ -74,11 +74,11 @@ static const float bt_709[] = {
 };
 
 static Atom xvBrightness, xvContrast, xvSaturation, xvHue;
-static CONST_ABI_16_TO_19 char xv_brightness_name[] = "XV_BRIGHTNESS";
-static CONST_ABI_16_TO_19 char xv_contrast_name[] = "XV_CONTRAST";
-static CONST_ABI_16_TO_19 char xv_saturation_name[] = "XV_SATURATION";
-static CONST_ABI_16_TO_19 char xv_hue_name[] = "XV_HUE";
-static CONST_ABI_16_TO_19 char xv_image_name[] = "XV_IMAGE";
+static char xv_brightness_name[] = "XV_BRIGHTNESS";
+static char xv_contrast_name[] = "XV_CONTRAST";
+static char xv_saturation_name[] = "XV_SATURATION";
+static char xv_hue_name[] = "XV_HUE";
+static char xv_image_name[] = "XV_IMAGE";
 
 #define NUM_TEXTURED_ATTRIBUTES 4
 static const XF86AttributeRec TexturedAttributes[NUM_TEXTURED_ATTRIBUTES] = {

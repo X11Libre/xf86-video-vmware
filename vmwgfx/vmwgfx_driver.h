@@ -58,14 +58,6 @@
 #include <libudev.h>
 #endif
 
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 12
-#define _swapl(x, n) swapl(x,n)
-#define _swaps(x, n) swaps(x,n)
-#else
-#define _swapl(x, n) (void) n; swapl(x)
-#define _swaps(x, n) (void) n; swaps(x)
-#endif
-
 #define DRV_ERROR(msg)	xf86DrvMsg(pScrn->scrnIndex, X_ERROR, msg);
 #define debug_printf(...)
 
@@ -135,9 +127,9 @@ typedef struct _modesettingRec
     ScreenBlockHandlerProcPtr saved_BlockHandler;
     CreateScreenResourcesProcPtr saved_CreateScreenResources;
     CloseScreenProcPtr saved_CloseScreen;
-    Bool (*saved_EnterVT)(VT_FUNC_ARGS_DECL);
-    void (*saved_LeaveVT)(VT_FUNC_ARGS_DECL);
-    void (*saved_AdjustFrame)(ADJUST_FRAME_ARGS_DECL);
+    Bool (*saved_EnterVT)(ScrnInfoPtr pScrn);
+    void (*saved_LeaveVT)(ScrnInfoPtr pScrn);
+    void (*saved_AdjustFrame)(ScrnInfoPtr arg, int x, int y);
     Bool (*saved_UseHWCursor)(ScreenPtr, CursorPtr);
     Bool (*saved_UseHWCursorARGB)(ScreenPtr, CursorPtr);
 
