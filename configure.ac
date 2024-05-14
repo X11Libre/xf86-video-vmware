@@ -71,7 +71,7 @@ XORG_DRIVER_CHECK_EXT(XINERAMA, xineramaproto)
 XORG_DRIVER_CHECK_EXT(XV, videoproto)
 
 # Obtain compiler/linker options for the driver dependencies
-PKG_CHECK_MODULES(XORG, [xorg-server >= 1.0.1 xproto fontsproto $REQUIRED_MODULES])
+PKG_CHECK_MODULES(XORG, [xorg-server >= 1.18 xproto fontsproto $REQUIRED_MODULES])
 PKG_CHECK_EXISTS([xorg-server >= 1.1.0],
                  [AC_DEFINE([HAVE_XORG_SERVER_1_1_0], 1,
                  [Has version 1.1.0 or greater of the Xserver])])
