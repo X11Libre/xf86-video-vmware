@@ -1568,7 +1568,7 @@ VMWAREFreeScreen(ScrnInfoPtr pScrn)
 }
 
 static ModeStatus
-VMWAREValidMode(ScrnInfoPtr arg, DisplayModePtr mode, Bool verbose, int flags)
+VMWAREValidMode(ScrnInfoPtr pScrn, DisplayModePtr mode, Bool verbose, int flags)
 {
     return MODE_OK;
 }

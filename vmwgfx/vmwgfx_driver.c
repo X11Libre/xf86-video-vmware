@@ -112,12 +112,12 @@ typedef uint8_t uint8;
 
 static Bool drv_pre_init(ScrnInfoPtr pScrn, int flags);
 static Bool drv_screen_init(ScreenPtr pScreen, int argc, char **argv);
-static Bool drv_switch_mode(ScrnInfoPtr arg, DisplayModePtr mode);
-static void drv_adjust_frame(ScrnInfoPtr arg, int x, int y);
-static Bool drv_enter_vt(ScrnInfoPtr arg);
-static void drv_leave_vt(ScrnInfoPtr arg);
-static void drv_free_screen(ScrnInfoPtr arg);
-static ModeStatus drv_valid_mode(ScrnInfoPtr arg, DisplayModePtr mode, Bool verbose,
+static Bool drv_switch_mode(ScrnInfoPtr pScrn, DisplayModePtr mode);
+static void drv_adjust_frame(ScrnInfoPtr pScrn, int x, int y);
+static Bool drv_enter_vt(ScrnInfoPtr pScrn);
+static void drv_leave_vt(ScrnInfoPtr pScrn);
+static void drv_free_screen(ScrnInfoPtr pScrn);
+static ModeStatus drv_valid_mode(ScrnInfoPtr pScrn, DisplayModePtr mode, Bool verbose,
 			         int flags);
 
 extern void xorg_tracker_set_functions(ScrnInfoPtr scrn);
@@ -1354,7 +1354,7 @@ drv_close_screen(ScreenPtr pScreen)
 }
 
 static ModeStatus
-drv_valid_mode(ScrnInfoPtr arg, DisplayModePtr mode, Bool verbose, int flags)
+drv_valid_mode(ScrnInfoPtr pScrn, DisplayModePtr mode, Bool verbose, int flags)
 {
     return MODE_OK;
 }

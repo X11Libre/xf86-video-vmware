@@ -126,8 +126,8 @@ typedef struct _modesettingRec
     ScreenBlockHandlerProcPtr saved_BlockHandler;
     CreateScreenResourcesProcPtr saved_CreateScreenResources;
     CloseScreenProcPtr saved_CloseScreen;
-    Bool (*saved_EnterVT)(ScrnInfoPtr arg);
-    void (*saved_LeaveVT)(ScrnInfoPtr arg);
+    Bool (*saved_EnterVT)(ScrnInfoPtr pScrn);
+    void (*saved_LeaveVT)(ScrnInfoPtr pScrn);
     void (*saved_AdjustFrame)(ScrnInfoPtr arg, int x, int y);
     Bool (*saved_UseHWCursor)(ScreenPtr, CursorPtr);
     Bool (*saved_UseHWCursorARGB)(ScreenPtr, CursorPtr);
