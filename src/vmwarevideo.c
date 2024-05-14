@@ -53,17 +53,10 @@
 #include <xf86_libc.h>
 #endif
 
-static CONST_ABI_16_0 char xv_adapt_name[] = "VMWare Overlay Video Engine";
-static CONST_ABI_16_0 char xv_image_name[] = "XV_IMAGE";
+static const char xv_adapt_name[] = "VMWare Overlay Video Engine";
+static const char xv_image_name[] = "XV_IMAGE";
 
-#define HAVE_FILLKEYHELPERDRAWABLE \
-    ((GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) >= 2) ||  \
-     ((GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) == 1) && \
-      (GET_ABI_MINOR(ABI_VIDEODRV_VERSION) >= 2)))
-
-#if HAVE_FILLKEYHELPERDRAWABLE
 #include <damage.h>
-#endif
 
 #define MAKE_ATOM(a) MakeAtom(a, sizeof(a) - 1, TRUE)
 
@@ -114,8 +107,8 @@ static XF86ImageRec vmwareVideoImages[] =
     XVIMAGE_UYVY
 };
 
-static CONST_ABI_16_TO_19 char xv_colorkey_name[] = "XV_COLORKEY";
-static CONST_ABI_16_TO_19 char xv_autopaint_name[] = "XV_AUTOPAINT_COLORKEY";
+static char xv_colorkey_name[] = "XV_COLORKEY";
+static char xv_autopaint_name[] = "XV_AUTOPAINT_COLORKEY";
 
 #define VMWARE_VID_NUM_ATTRIBUTES 2
 static XF86AttributeRec vmwareVideoAttributes[] =
@@ -197,20 +190,12 @@ typedef VMWAREVideoRec *VMWAREVideoPtr;
 /*
  * Callback functions
  */
-#if (GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) >= 1)
 static int vmwareXvPutImage(ScrnInfoPtr pScrn, short src_x, short src_y,
                             short drw_x, short drw_y, short src_w, short src_h,
                             short drw_w, short drw_h, int image,
                             unsigned char *buf, short width, short height,
                             Bool sync, RegionPtr clipBoxes, pointer data,
                             DrawablePtr dst);
-#else
-static int vmwareXvPutImage(ScrnInfoPtr pScrn, short src_x, short src_y,
-                            short drw_x, short drw_y, short src_w, short src_h,
-                            short drw_w, short drw_h, int image,
-                            unsigned char *buf, short width, short height,
-                            Bool sync, RegionPtr clipBoxes, pointer data);
-#endif
 static void vmwareStopVideo(ScrnInfoPtr pScrn, pointer data, Bool Cleanup);
 static int vmwareQueryImageAttributes(ScrnInfoPtr pScrn, int format,
                                       unsigned short *width,
@@ -696,16 +681,12 @@ vmwareVideoInitStream(ScrnInfoPtr pScrn, VMWAREVideoPtr pVid,
 	BoxPtr boxes = REGION_RECTS(&pVid->clipBoxes);
 	int nBoxes = REGION_NUM_RECTS(&pVid->clipBoxes);
 
-#if HAVE_FILLKEYHELPERDRAWABLE
 	if (draw->type == DRAWABLE_WINDOW) {
 	    xf86XVFillKeyHelperDrawable(draw, pVid->colorKey, clipBoxes);
 	    DamageDamageRegion(draw, clipBoxes);
 	} else {
 	    xf86XVFillKeyHelper(pScrn->pScreen, pVid->colorKey, clipBoxes);
         }
-#else
-        xf86XVFillKeyHelper(pScrn->pScreen, pVid->colorKey, clipBoxes);
-#endif
 	/**
 	 * Force update to paint the colorkey before the overlay flush.
 	 */
@@ -887,11 +868,7 @@ vmwareVideoPlay(ScrnInfoPtr pScrn, VMWAREVideoPtr pVid,
 	    BoxPtr boxes = REGION_RECTS(&pVid->clipBoxes);
 	    int nBoxes = REGION_NUM_RECTS(&pVid->clipBoxes);
 
-#if HAVE_FILLKEYHELPERDRAWABLE
 	    xf86XVFillKeyHelperDrawable(draw, pVid->colorKey, clipBoxes);
-#else
-	    xf86XVFillKeyHelper(pScrn->pScreen, pVid->colorKey, clipBoxes);
-#endif
 	    /**
 	     * Force update to paint the colorkey before the overlay flush.
 	     */
@@ -1090,7 +1067,6 @@ vmwareVideoEndStream(ScrnInfoPtr pScrn, VMWAREVideoPtr pVid)
  *-----------------------------------------------------------------------------
  */
 
-#if (GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) >= 1)
 static int
 vmwareXvPutImage(ScrnInfoPtr pScrn, short src_x, short src_y,
                  short drw_x, short drw_y, short src_w, short src_h,
@@ -1098,14 +1074,6 @@ vmwareXvPutImage(ScrnInfoPtr pScrn, short src_x, short src_y,
                  unsigned char *buf, short width, short height,
                  Bool sync, RegionPtr clipBoxes, pointer data,
                  DrawablePtr dst)
-#else
-static int
-vmwareXvPutImage(ScrnInfoPtr pScrn, short src_x, short src_y,
-                 short drw_x, short drw_y, short src_w, short src_h,
-                 short drw_w, short drw_h, int format,
-                 unsigned char *buf, short width, short height,
-                 Bool sync, RegionPtr clipBoxes, pointer data)
-#endif
 {
     VMWAREPtr pVMWARE = VMWAREPTR(pScrn);
     VMWAREVideoPtr pVid = data;
@@ -1116,15 +1084,9 @@ vmwareXvPutImage(ScrnInfoPtr pScrn, short src_x, short src_y,
         return XvBadAlloc;
     }
 
-#if (GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) >= 1)
     return pVid->play(pScrn, pVid, src_x, src_y, drw_x, drw_y, src_w, src_h,
                       drw_w, drw_h, format, buf, width, height, clipBoxes,
 		      dst);
-#else
-    return pVid->play(pScrn, pVid, src_x, src_y, drw_x, drw_y, src_w, src_h,
-                      drw_w, drw_h, format, buf, width, height, clipBoxes,
-		      NULL);
-#endif
 }
 
 

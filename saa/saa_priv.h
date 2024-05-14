@@ -66,8 +66,8 @@
 
 struct saa_gc_priv {
     /* GC values from the layer below. */
-    CONST_ABI_18_0 GCOps *saved_ops;
-    CONST_ABI_18_0 GCFuncs *saved_funcs;
+    const GCOps *saved_ops;
+    const GCFuncs *saved_funcs;
 };
 
 struct saa_screen_priv {
@@ -138,13 +138,10 @@ do {								\
 }
 
 #define saa_swap(priv, real, mem) {\
-	CONST_ABI_18_0 void *tmp = (priv)->saved_##mem;		\
+	const void *tmp = (priv)->saved_##mem;		\
 	(priv)->saved_##mem = (real)->mem;	\
 	(real)->mem = tmp;			\
 }
-
-#if (GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) >= 8)
-#define SAA_DEVPRIVATEKEYREC 1
 
 extern DevPrivateKeyRec saa_screen_index;
 extern DevPrivateKeyRec saa_pixmap_index;
@@ -170,34 +167,6 @@ saa_pixmap(PixmapPtr pix)
     return (struct saa_pixmap *)dixGetPrivateAddr(&pix->devPrivates,
 						  &saa_pixmap_index);
 }
-#else
-#undef SAA_DEVPRIVATEKEYREC
-extern int saa_screen_index;
-extern int saa_pixmap_index;
-extern int saa_gc_index;
-
-static inline struct saa_screen_priv *
-saa_screen(ScreenPtr screen)
-{
-    return (struct saa_screen_priv *)dixLookupPrivate(&screen->devPrivates,
-						      &saa_screen_index);
-}
-
-static inline struct saa_gc_priv *
-saa_gc(GCPtr gc)
-{
-    return (struct saa_gc_priv *)dixLookupPrivateAddr(&gc->devPrivates,
-						      &saa_gc_index);
-}
-
-static inline struct saa_pixmap *
-saa_pixmap(PixmapPtr pix)
-{
-    return (struct saa_pixmap *)dixLookupPrivateAddr(&pix->devPrivates,
-							  &saa_pixmap_index);
-}
-
-#endif
 
 extern void
 saa_check_fill_spans(DrawablePtr pDrawable, GCPtr pGC, int nspans,

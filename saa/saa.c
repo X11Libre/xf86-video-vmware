@@ -40,15 +40,9 @@
 #include "saa.h"
 #include "saa_priv.h"
 
-#ifdef SAA_DEVPRIVATEKEYREC
 DevPrivateKeyRec saa_screen_index;
 DevPrivateKeyRec saa_pixmap_index;
 DevPrivateKeyRec saa_gc_index;
-#else
-int saa_screen_index = -1;
-int saa_pixmap_index = -1;
-int saa_gc_index = -1;
-#endif
 
 /**
  * saa_get_drawable_pixmap() returns a backing pixmap for a given drawable.
@@ -712,7 +706,6 @@ saa_driver_init(ScreenPtr screen, struct saa_driver * saa_driver)
 	return FALSE;
     }
 #endif
-#ifdef SAA_DEVPRIVATEKEYREC
     if (!dixRegisterPrivateKey(&saa_screen_index, PRIVATE_SCREEN, 0)) {
 	LogMessage(X_ERROR, "Failed to register SAA screen private.\n");
 	return FALSE;
@@ -727,20 +720,6 @@ saa_driver_init(ScreenPtr screen, struct saa_driver * saa_driver)
 	LogMessage(X_ERROR, "Failed to register SAA gc private.\n");
 	return FALSE;
     }
-#else
-    if (!dixRequestPrivate(&saa_screen_index, 0)) {
-	LogMessage(X_ERROR, "Failed to register SAA screen private.\n");
-	return FALSE;
-    }
-    if (!dixRequestPrivate(&saa_pixmap_index, saa_driver->pixmap_size)) {
-	LogMessage(X_ERROR, "Failed to register SAA pixmap private.\n");
-	return FALSE;
-    }
-    if (!dixRequestPrivate(&saa_gc_index, sizeof(struct saa_gc_priv))) {
-	LogMessage(X_ERROR, "Failed to register SAA gc private.\n");
-	return FALSE;
-    }
-#endif
 
     sscreen = calloc(1, sizeof(*sscreen));
 

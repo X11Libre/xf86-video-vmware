@@ -43,45 +43,8 @@ char rcsId_vmware[] =
 #include <xf86_libc.h>
 #endif
 
-#if (GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) >= 5)
-
 #define xf86LoaderReqSymLists(...) do {} while (0)
 #define LoaderRefSymLists(...) do {} while (0)
-
-#else
-
-const char *vgahwSymbols[] = {
-    "vgaHWGetHWRec",
-    "vgaHWGetIOBase",
-    "vgaHWGetIndex",
-    "vgaHWInit",
-    "vgaHWProtect",
-    "vgaHWRestore",
-    "vgaHWSave",
-    "vgaHWSaveScreen",
-    "vgaHWUnlock",
-    NULL
-};
-
-static const char *fbSymbols[] = {
-    "fbCreateDefColormap",
-    "fbPictureInit",
-    "fbScreenInit",
-    NULL
-};
-
-static const char *ramdacSymbols[] = {
-    "xf86CreateCursorInfoRec",
-    "xf86DestroyCursorInfoRec",
-    "xf86InitCursor",
-    NULL
-};
-
-static const char *shadowfbSymbols[] = {
-    "ShadowFBInit2",
-    NULL
-};
-#endif
 
 /* Table of default modes to always add to the mode list. */
 
@@ -306,12 +269,6 @@ VMWAREPreInit(ScrnInfoPtr pScrn, int flags)
     unsigned long domainIOBase = 0;
     uint32 width = 0, height = 0;
     Bool defaultMode;
-
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 12
-#ifndef BUILD_FOR_420
-    domainIOBase = pScrn->domainIOBase;
-#endif
-#endif
 
     if (flags & PROBE_DETECT) {
         return FALSE;
@@ -1343,7 +1300,7 @@ VMWAREScreenInit(SCREEN_INIT_ARGS_DECL)
 
 
     if (useXinerama && xf86IsOptionSet(options, OPTION_GUI_LAYOUT)) {
-       CONST_ABI_18_0 char *topology = xf86GetOptValString(options, OPTION_GUI_LAYOUT);
+       const char *topology = xf86GetOptValString(options, OPTION_GUI_LAYOUT);
        if (topology) {
           pVMWARE->xineramaState =
              VMWAREParseTopologyString(pScrn, topology,
@@ -1355,7 +1312,7 @@ VMWAREScreenInit(SCREEN_INIT_ARGS_DECL)
        }
     } else if (useXinerama &&
 	       xf86IsOptionSet(options, OPTION_STATIC_XINERAMA)) {
-       CONST_ABI_18_0 char *topology = xf86GetOptValString(options, OPTION_STATIC_XINERAMA);
+       const char *topology = xf86GetOptValString(options, OPTION_STATIC_XINERAMA);
        if (topology) {
           pVMWARE->xineramaState =
              VMWAREParseTopologyString(pScrn, topology,
