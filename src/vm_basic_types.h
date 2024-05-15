@@ -33,21 +33,7 @@ typedef char           Bool;
 #define TRUE           1
 #endif
 
-#ifdef _MSC_VER
-typedef unsigned __int64 uint64;
-typedef signed __int64 int64;
-
-#pragma warning (disable :4018) // signed/unsigned mismatch
-#pragma warning (disable :4761) // integral size mismatch in argument; conversion supplied
-#pragma warning (disable :4305) // truncation from 'const int' to 'short'
-#pragma warning (disable :4244) // conversion from 'unsigned short' to 'unsigned char'
-//#pragma warning (disable :4101) // unreferenced local variable
-#pragma warning (disable :4133) // incompatible types - from 'struct VM *' to 'int *'
-#pragma warning (disable :4047) // differs in levels of indirection
-#pragma warning (disable :4146) // unary minus operator applied to unsigned type, result still unsigned
-#pragma warning (disable :4142) // benign redefinition of type
-
-#elif defined(__GNUC__)
+#if defined(__GNUC__)
 /* The Xserver source compiles with -ansi -pendantic */
 #ifndef __STRICT_ANSI__
 typedef unsigned long long uint64;
@@ -67,23 +53,6 @@ typedef unsigned char      uint8;
 typedef int       int32;
 typedef short     int16;
 typedef char      int8;
-
-
-/*
- * Printf format for 64-bit number.  Use it like this:
- *    printf("%"FMT64"d\n", big);
- */
-
-#ifdef _MSC_VER
-#define FMT64   "I64"
-#elif defined(__GNUC__)
-#define FMT64   "L"
-#else
-/* FMT64 isn't actually used in the vmware driver. */
-#if 0
-#error - Need compiler define for FMT64
-#endif
-#endif
 
 typedef uint32 VA;
 typedef uint32 VPN;
@@ -109,16 +78,9 @@ typedef uint32 MPN;
 #endif
 #endif
 
-#ifdef _MSC_VER
-#ifndef INLINE
-#define INLINE        __inline
-#endif
-#else
 #ifndef INLINE
 #define INLINE        inline
 #endif
-#endif
-
 
 #if defined(WIN32) && !defined(VMX86_NO_THREADS)
 #define THREADSPECIFIC _declspec(thread) 
@@ -138,9 +100,7 @@ typedef uint32 MPN;
  * Attributes placed on function declarations to tell the compiler
  * that the function never returns.
  */
-#ifdef _MSC_VER
-#define NORETURN_DECL(_fndecl)    __declspec(noreturn) _fndecl
-#elif defined(__GNUC__) && __GNUC__ >= 2 && __GNUC_MINOR__ >= 5
+#if defined(__GNUC__) && __GNUC__ >= 2 && __GNUC_MINOR__ >= 5
 #define NORETURN_DECL(_fndecl)    _fndecl __attribute__((__noreturn__))
 #else
 #define NORETURN_DECL(_fndecl)    _fndecl
