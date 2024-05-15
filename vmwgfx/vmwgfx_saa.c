@@ -77,11 +77,7 @@ vmwgfx_pixmap_remove_damage(PixmapPtr pixmap)
     if (!spix->damage || vpix->hw || vpix->gmr || vpix->malloc)
 	return;
 
-#if XORG_VERSION_CURRENT >= XORG_VERSION_NUMERIC(1,14,99,2,0)
     DamageUnregister(spix->damage);
-#else
-    DamageUnregister(&pixmap->drawable, spix->damage);
-#endif
 
     DamageDestroy(spix->damage);
     spix->damage = NULL;

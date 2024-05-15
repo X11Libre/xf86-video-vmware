@@ -66,12 +66,6 @@
 #ifndef _X_EXPORT
 #define _X_EXPORT
 #endif
-/*
- * So that the file compiles unmodified when dropped into an xfree source tree.
- */
-#ifndef XORG_VERSION_CURRENT
-#define XORG_VERSION_CURRENT XF86_VERSION_CURRENT
-#endif
 
 /*
  * This is the only way I know to turn a #define of an integer constant into
