@@ -57,13 +57,6 @@
 #endif
 
 /*
- * So that the file compiles unmodified when dropped in to a < 6.9 source tree.
- */
-#ifndef _X_EXPORT
-#define _X_EXPORT
-#endif
-
-/*
  * This is the only way I know to turn a #define of an integer constant into
  * a constant string.
  */
