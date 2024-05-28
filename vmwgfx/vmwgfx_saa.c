@@ -386,8 +386,6 @@ vmwgfx_upload_to_hw(struct saa_driver *driver, PixmapPtr pixmap,
 static void
 vmwgfx_release_from_cpu(struct saa_driver *driver, PixmapPtr pixmap, saa_access_t access)
 {
-  //    LogMessage(X_INFO, "Release 0x%08lx access 0x%08x\n",
-  //	       (unsigned long) pixmap, (unsigned) access);
 }
 
 static void *
@@ -423,10 +421,6 @@ vmwgfx_unmap(struct saa_driver *driver, PixmapPtr pixmap, saa_access_t access)
 
     if (vpix->gmr)
 	return vmwgfx_dmabuf_unmap(vpix->gmr);
-
-//    LogMessage(X_INFO, "Unmap 0x%08lx access 0x%08x\n",
-    //       (unsigned long) pixmap, (unsigned) access);
-    ;
 }
 
 static Bool
@@ -1311,23 +1305,6 @@ vmwgfx_dirty(struct saa_driver *driver, PixmapPtr pixmap,
      */
     if (WSBMLISTEMPTY(&vpix->scanout_list))
 	return TRUE;
-
-#if 0
-    /*
-     * This code can be enabled to immediately upload scanout sw
-     * contents to the hw surface. Otherwise this is done
-     * just before we call the kms update function for the hw
-     * surface.
-     */
-    if (vpix->scanout_hw) {
-	if (!hw && !vmwgfx_upload_to_hw(&vsaa->driver, pixmap, damage))
-	    return FALSE;
-
-	REGION_SUBTRACT(&vsaa->pScreen, &spix->dirty_shadow,
-			&spix->dirty_shadow, damage);
-	hw = TRUE;
-    }
-#endif
 
     /*
      * Is the new scanout damage hw or sw?
