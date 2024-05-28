@@ -11,9 +11,7 @@
 #include "config.h"
 #endif
 
-#ifdef HAVE_XORG_SERVER_1_1_0
 #include <string.h>
-#endif
 
 #include "xf86.h"
 #include "xf86_OSproc.h"

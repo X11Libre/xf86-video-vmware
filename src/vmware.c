@@ -38,11 +38,6 @@ char rcsId_vmware[] =
 #include "vmware_common.h"
 #include "common_compat.h"
 
-#ifndef HAVE_XORG_SERVER_1_5_0
-#include <xf86_ansic.h>
-#include <xf86_libc.h>
-#endif
-
 #define xf86LoaderReqSymLists(...) do {} while (0)
 #define LoaderRefSymLists(...) do {} while (0)
 
@@ -322,9 +317,7 @@ VMWAREPreInit(ScrnInfoPtr pScrn, int flags)
         return FALSE;
     }
 
-#ifdef HAVE_XORG_SERVER_1_12_0
     vgaHWSetStdFuncs(VGAHWPTR(pScrn));
-#endif
 
     /*
      * Save the current video state.  Do it here before VMXGetVMwareSvgaId
