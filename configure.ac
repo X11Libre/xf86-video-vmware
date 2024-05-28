@@ -72,26 +72,6 @@ XORG_DRIVER_CHECK_EXT(XV, videoproto)
 
 # Obtain compiler/linker options for the driver dependencies
 PKG_CHECK_MODULES(XORG, [xorg-server >= 1.18 xproto fontsproto $REQUIRED_MODULES])
-PKG_CHECK_EXISTS([xorg-server >= 1.1.0],
-                 [AC_DEFINE([HAVE_XORG_SERVER_1_1_0], 1,
-                 [Has version 1.1.0 or greater of the Xserver])])
-
-PKG_CHECK_EXISTS([xorg-server >= 1.2.0],
-                 [AC_DEFINE([HAVE_XORG_SERVER_1_2_0], 1,
-                 [Has version 1.2.0 or greater of the Xserver])])
-
-PKG_CHECK_EXISTS([xorg-server >= 1.4.99],
-                 [AC_DEFINE([HAVE_XORG_SERVER_1_5_0], 1,
-                 [Has version 1.5.0 or greater of the Xserver])])
-
-PKG_CHECK_EXISTS([xorg-server >= 1.7.0],
-                 [AC_DEFINE([HAVE_XORG_SERVER_1_7_0], 1,
-                 [Has version 1.7.0 or greater of the Xserver])
-		 BUILD_VMWGFX=yes],[BUILD_VMWGFX=no])
-
-PKG_CHECK_EXISTS([xorg-server >= 1.12.0],
-                 [AC_DEFINE([HAVE_XORG_SERVER_1_12_0], 1,
-                 [Has version 1.12.0 or greater of the Xserver])])
 
 # Obtain compiler/linker options for the vmwarectrl client tool
 PKG_CHECK_MODULES(X11, x11 xext)

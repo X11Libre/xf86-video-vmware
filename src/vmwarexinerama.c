@@ -43,11 +43,6 @@
 
 #include "vmware.h"
 
-#ifndef HAVE_XORG_SERVER_1_5_0
-#include <xf86_ansic.h>
-#include <xf86_libc.h>
-#endif
-
 /*
  *----------------------------------------------------------------------------
  *
