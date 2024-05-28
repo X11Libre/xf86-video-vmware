@@ -41,11 +41,6 @@
 #include "svga_reg.h"
 #endif
 
-#ifndef HAVE_XORG_SERVER_1_5_0
-#include <xf86_ansic.h>
-#include <xf86_libc.h>
-#endif
-
 #ifdef XSERVER_PLATFORM_BUS
 #include "xf86platformBus.h"
 #endif
