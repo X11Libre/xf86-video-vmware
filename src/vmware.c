@@ -507,12 +507,6 @@ VMWAREPreInit(ScrnInfoPtr pScrn, int flags)
     }
     xf86PrintDepthBpp(pScrn);
 
-#if 0
-    if (pScrn->depth == 24 && pix24bpp == 0) {
-        pix24bpp = xf86GetBppFromDepth(pScrn, 24);
-    }
-#endif
-
     if (pScrn->depth > 8) {
         rgb zeros = { 0, 0, 0 };
 
@@ -530,17 +524,8 @@ VMWAREPreInit(ScrnInfoPtr pScrn, int flags)
                    pScrn->defaultVisual, pVMWARE->defaultVisual);
         return FALSE;
     }
-#if 0
-    bytesPerPixel = pScrn->bitsPerPixel / 8;
-#endif
-    pScrn->progClock = TRUE;
 
-#if 0 /* MGA does not do this */
-    if (pScrn->visual != 0) {	/* FIXME */
-        /* print error message */
-        return FALSE;
-    }
-#endif
+    pScrn->progClock = TRUE;
 
     xf86CollectOptions(pScrn, NULL);
     if (!(options = VMWARECopyOptions()))
@@ -603,16 +588,6 @@ VMWAREPreInit(ScrnInfoPtr pScrn, int flags)
             return FALSE;
         }
     }
-#if 0
-    if ((i = xf86GetPciInfoForScreen(pScrn->scrnIndex, &pciList, NULL)) != 1) {
-        /* print error message */
-        VMWAREFreeRec(pScrn);
-        if (i > 0) {
-            free(pciList);
-        }
-        return FALSE;
-    }
-#endif
     clockRanges = XNFcallocarray(sizeof(ClockRange), 1);
     clockRanges->next = NULL;
     clockRanges->minClock = 1;

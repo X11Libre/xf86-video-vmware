@@ -374,12 +374,6 @@ vmwgfx_dma(int host_x, int host_y,
 	    cb->w = (uint16_t) (clips->x2 - clips->x1);
 	    cb->h = (uint16_t) (clips->y2 - clips->y1);
 	    cb->d = 1;
-#if 0
-	    LogMessage(X_INFO, "DMA! x: %u y: %u srcx: %u srcy: %u w: %u h: %u %s\n",
-		       cb->x, cb->y, cb->srcx, cb->srcy, cb->w, cb->h,
-		       to_surface ? "to" : "from");
-#endif
-
 	}
 
 	memset(&arg, 0, sizeof(arg));

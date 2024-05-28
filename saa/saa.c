@@ -691,21 +691,6 @@ saa_driver_init(ScreenPtr screen, struct saa_driver * saa_driver)
 		   saa_driver->saa_minor, SAA_VERSION_MAJOR, SAA_VERSION_MINOR);
 	return FALSE;
     }
-#if 0
-    if (!saa_driver->prepare_solid) {
-	LogMessage(X_ERROR,
-		   "SAA(%d): saa_driver_t::prepare_solid must be "
-		   "non-NULL\n", screen->myNum);
-	return FALSE;
-    }
-
-    if (!saa_driver->prepare_copy) {
-	LogMessage(X_ERROR,
-		   "SAA(%d): saa_driver_t::prepare_copy must be "
-		   "non-NULL\n", screen->myNum);
-	return FALSE;
-    }
-#endif
     if (!dixRegisterPrivateKey(&saa_screen_index, PRIVATE_SCREEN, 0)) {
 	LogMessage(X_ERROR, "Failed to register SAA screen private.\n");
 	return FALSE;
@@ -774,8 +759,5 @@ saa_driver_init(ScreenPtr screen, struct saa_driver * saa_driver)
 Bool
 saa_resources_init(ScreenPtr screen)
 {
-/*    if (!saa_glyphs_init(screen))
-	return FALSE;
-*/
     return TRUE;
 }
