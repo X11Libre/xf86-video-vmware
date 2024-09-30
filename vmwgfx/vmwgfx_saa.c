@@ -1595,7 +1595,7 @@ vmwgfx_scanout_unref(struct vmwgfx_screen_entry *entry)
     }
 
     entry->pixmap = NULL;
-    pixmap->drawable.pScreen->DestroyPixmap(pixmap);
+    dixDestroyPixmap(pixmap, 0);
 }
 
 void

@@ -295,7 +295,7 @@ crtc_shadow_destroy(xf86CrtcPtr crtc, PixmapPtr rotate_pixmap, void *data)
         return;
 
     pScreen = rotate_pixmap->drawable.pScreen;
-    pScreen->DestroyPixmap(rotate_pixmap);
+    dixDestroyPixmap(rotate_pixmap, 0);
 }
 
 

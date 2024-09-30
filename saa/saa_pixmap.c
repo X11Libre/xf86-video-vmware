@@ -104,7 +104,8 @@ saa_create_pixmap(ScreenPtr pScreen, int w, int h, int depth,
     driver->destroy_pixmap(driver, pPixmap);
  out_no_driver_priv:
     saa_swap(sscreen, pScreen, DestroyPixmap);
-    pScreen->DestroyPixmap(pPixmap);
+    if (pScreen->DestroyPixmap)
+        pScreen->DestroyPixmap(pPixmap);
     saa_swap(sscreen, pScreen, DestroyPixmap);
  out_no_pix:
     LogMessage(X_ERROR, "Failing pixmap creation.\n");
@@ -116,7 +117,7 @@ saa_destroy_pixmap(PixmapPtr pPixmap)
 {
     ScreenPtr pScreen = pPixmap->drawable.pScreen;
     struct saa_screen_priv *sscreen = saa_screen(pScreen);
-    Bool ret;
+    Bool ret = TRUE;
     struct saa_driver *driver = sscreen->driver;
 
     if (pPixmap->refcnt == 1) {
@@ -139,7 +140,8 @@ saa_destroy_pixmap(PixmapPtr pPixmap)
     }
 
     saa_swap(sscreen, pScreen, DestroyPixmap);
-    ret = pScreen->DestroyPixmap(pPixmap);
+    if (pScreen->DestroyPixmap)
+        ret = pScreen->DestroyPixmap(pPixmap);
     saa_swap(sscreen, pScreen, DestroyPixmap);
 
     return ret;
