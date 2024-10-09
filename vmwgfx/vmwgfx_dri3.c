@@ -99,13 +99,12 @@ vmwgfx_dri3_pixmap_from_fd(ScreenPtr screen, int fd,
     struct xa_surface *srf;
     struct vmwgfx_saa_pixmap *vpix;
     ScrnInfoPtr pScrn = xf86ScreenToScrn(screen);
-    PixmapPtr pixmap;
 
     if (width == 0 || height == 0 ||
         depth < 15 || bpp != BitsPerPixel(depth) || stride < width * bpp / 8)
         return NULL;
 
-    pixmap = screen->CreatePixmap(screen, width, height, depth, 0);
+    PixmapPtr pixmap = dixPixmapCreate(screen, width, height, depth, 0);
     if (!pixmap) {
         xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "DRI3 pixmap creation failed.\n");
         return NULL;
@@ -145,7 +144,7 @@ vmwgfx_dri3_pixmap_from_fd(ScreenPtr screen, int fd,
   out_no_damage:
     xa_surface_unref(srf);
   out_bad_format:
-    dixDestroyPixmap(pixmap, 0);
+    dixPixmapPut(pixmap);
 
     return NULL;
 }

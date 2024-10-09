@@ -621,7 +621,7 @@ saa_early_close_screen(CLOSE_SCREEN_ARGS_DECL)
 	 * is the last chance we have of releasing our resources
 	 * associated with the Pixmap. So do it first.
 	 */
-        dixDestroyPixmap(pScreen->devPrivate, 0);
+        dixPixmapPut(pScreen->devPrivate);
 	pScreen->devPrivate = NULL;
     }
 

@@ -112,11 +112,7 @@ dri2_do_create_buffer(DrawablePtr pDraw, DRI2Buffer2Ptr buffer, unsigned int for
 	if (buffer->attachment != DRI2BufferFakeFrontLeft ||
 	    &pPixmap->drawable != pDraw) {
 
-	    pPixmap = (*pScreen->CreatePixmap)(pScreen,
-					       pDraw->width,
-					       pDraw->height,
-					       depth,
-					       0);
+            pPixmap = dixPixmapCreate(pScreen, pDraw->width, pDraw->height, depth, 0);
 	    if (pPixmap == NullPixmap)
 		return FALSE;
 
@@ -136,8 +132,7 @@ dri2_do_create_buffer(DrawablePtr pDraw, DRI2Buffer2Ptr buffer, unsigned int for
       buffer->format = pDraw->bitsPerPixel;
       if (!private->pPixmap) {
 	private->dri2_depth = 0;
-	private->pPixmap = pPixmap;
-	pPixmap->refcnt++;
+	private->pPixmap = dixPixmapGet(pPixmap);
       }
       return TRUE;
     case DRI2BufferStencil:
@@ -184,10 +179,7 @@ dri2_do_create_buffer(DrawablePtr pDraw, DRI2Buffer2Ptr buffer, unsigned int for
 	break;
     }
 
-    if (!private->pPixmap) {
-	private->pPixmap = pPixmap;
-	pPixmap->refcnt++;
-    }
+    private->pPixmap = dixPixmapGet(pPixmap);
 
     if (!srf) {
 	depth = (format) ? vmwgfx_color_format_to_depth(format) :
@@ -245,7 +237,7 @@ dri2_do_destroy_buffer(DrawablePtr pDraw, DRI2BufferPtr buffer)
 	WSBMLISTDELINIT(&vpix->sync_x_head);
 
     private->srf = NULL;
-    dixDestroyPixmap(private->pPixmap, 0);
+    dixPixmapPut(private->pPixmap);
 }
 
 
