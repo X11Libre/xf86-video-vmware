@@ -72,7 +72,8 @@ static void
 crtc_dpms(xf86CrtcPtr crtc, int mode)
 {
     struct crtc_private *crtcp = crtc->driver_private;
-    /* ScrnInfoPtr pScrn = crtc->scrn; */
+    modesettingPtr ms = modesettingPTR(crtc->scrn);
+    drmModeCrtcPtr drm_crtc = crtcp->drm_crtc;
 
     switch (mode) {
     case DPMSModeOn:
@@ -93,6 +94,7 @@ crtc_dpms(xf86CrtcPtr crtc, int mode)
        * another dpms call, so don't release the scanout pixmap ref.
        */
 	if (!crtc->enabled && crtcp->entry.pixmap) {
+	    drmModeSetCrtc(ms->fd, drm_crtc->crtc_id, 0, 0, 0, NULL, 0, NULL);
 	    vmwgfx_scanout_unref(&crtcp->entry);
 	}
 	break;
