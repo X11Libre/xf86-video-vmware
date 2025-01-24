@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component>
+  <id>org.x.video.vmware</id>
+  <metadata_license>MIT</metadata_license>
+  <name>xserver-xorg-video-vmware</name>
+  <summary>X.Org X server -- VMware display driver</summary>
+  <description>
+    <p>This package provides the driver for VMware client sessions,
+    i.e. if Linux is running inside a VMware session.</p>
+    <p>This package is built from the X.org xf86-video-vmware driver
+    module.</p>
+  </description>
+  <url type="homepage">https://www.x.org</url>
+  <provides>
+    <modalias>dmi:*:svnVMWare*:*</modalias>
+  </provides>
+</component>

@@ -31,3 +31,9 @@ ChangeLog:
 	$(CHANGELOG_CMD)
 
 dist-hook: ChangeLog INSTALL
+
+EXTRA_DIST = \
+	org.x.video.vmware.metainfo.xml
+
+dist_metainfo_DATA = org.x.video.vmware.metainfo.xml
+metainfodir = $(datarootdir)/metainfo
