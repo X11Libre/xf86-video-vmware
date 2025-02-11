@@ -11,9 +11,7 @@
 #include "config.h"
 #endif
 
-#ifdef HAVE_XORG_SERVER_1_1_0
 #include <string.h>
-#endif
 
 #include "xf86.h"
 #include "xf86_OSproc.h"
@@ -42,14 +40,6 @@
 #include "svga_struct.h"
 #include "vmware_bootstrap.h"
 #include <xf86Module.h>
-
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 12
-#define _swapl(x, n) swapl(x,n)
-#define _swaps(x, n) swaps(x,n)
-#else
-#define _swapl(x, n) (void) n; swapl(x)
-#define _swaps(x, n) (void) n; swaps(x)
-#endif
 
 /*
  * The virtual hardware's cursor limits are pretty big. Some VMware

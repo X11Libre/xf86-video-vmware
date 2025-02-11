@@ -46,11 +46,6 @@
 #include "vmware.h"
 #include "vmwarectrlproto.h"
 
-#ifndef HAVE_XORG_SERVER_1_5_0
-#include <xf86_ansic.h>
-#include <xf86_libc.h>
-#endif
-
 /*
  *----------------------------------------------------------------------------
  *
@@ -72,7 +67,6 @@ static int
 VMwareCtrlQueryVersion(ClientPtr client)
 {
    xVMwareCtrlQueryVersionReply rep = { 0, };
-   register int n;
 
    REQUEST_SIZE_MATCH(xVMwareCtrlQueryVersionReq);
 
@@ -82,10 +76,10 @@ VMwareCtrlQueryVersion(ClientPtr client)
    rep.majorVersion = VMWARE_CTRL_MAJOR_VERSION;
    rep.minorVersion = VMWARE_CTRL_MINOR_VERSION;
    if (client->swapped) {
-      _swaps(&rep.sequenceNumber, n);
-      _swapl(&rep.length, n);
-      _swapl(&rep.majorVersion, n);
-      _swapl(&rep.minorVersion, n);
+      swaps(&rep.sequenceNumber);
+      swapl(&rep.length);
+      swapl(&rep.majorVersion);
+      swapl(&rep.minorVersion);
    }
    WriteToClient(client, sizeof(xVMwareCtrlQueryVersionReply), (char *)&rep);
 
@@ -201,7 +195,6 @@ VMwareCtrlSetRes(ClientPtr client)
    xVMwareCtrlSetResReply rep = { 0, };
    ScrnInfoPtr pScrn;
    ExtensionEntry *ext;
-   register int n;
 
    REQUEST_SIZE_MATCH(xVMwareCtrlSetResReq);
 
@@ -225,11 +218,11 @@ VMwareCtrlSetRes(ClientPtr client)
    rep.x = stuff->x;
    rep.y = stuff->y;
    if (client->swapped) {
-      _swaps(&rep.sequenceNumber, n);
-      _swapl(&rep.length, n);
-      _swapl(&rep.screen, n);
-      _swapl(&rep.x, n);
-      _swapl(&rep.y, n);
+      swaps(&rep.sequenceNumber);
+      swapl(&rep.length);
+      swapl(&rep.screen);
+      swapl(&rep.x);
+      swapl(&rep.y);
    }
    WriteToClient(client, sizeof(xVMwareCtrlSetResReply), (char *)&rep);
 
@@ -312,9 +305,7 @@ VMwareCtrlDoSetTopology(ScrnInfoPtr pScrn,
 	     */
 
             vmwareNextXineramaState(pVMWARE);
-#ifdef HAVE_XORG_SERVER_1_2_0
             RRSendConfigNotify(pScrn->pScreen);
-#endif
             vmwareSendSVGACmdUpdateFullScreen(pVMWARE);
 
             return TRUE;
@@ -355,7 +346,6 @@ VMwareCtrlSetTopology(ClientPtr client)
    xVMwareCtrlSetTopologyReply rep = { 0, };
    ScrnInfoPtr pScrn;
    ExtensionEntry *ext;
-   register int n;
    xXineramaScreenInfo *extents;
 
    REQUEST_AT_LEAST_SIZE(xVMwareCtrlSetTopologyReq);
@@ -379,9 +369,9 @@ VMwareCtrlSetTopology(ClientPtr client)
    rep.sequenceNumber = client->sequence;
    rep.screen = stuff->screen;
    if (client->swapped) {
-      _swaps(&rep.sequenceNumber, n);
-      _swapl(&rep.length, n);
-      _swapl(&rep.screen, n);
+      swaps(&rep.sequenceNumber);
+      swapl(&rep.length);
+      swapl(&rep.screen);
    }
    WriteToClient(client, sizeof(xVMwareCtrlSetTopologyReply), (char *)&rep);
 
@@ -443,12 +433,10 @@ VMwareCtrlDispatch(ClientPtr client)
 static int
 SVMwareCtrlQueryVersion(ClientPtr client)
 {
-   register int n;
-
    REQUEST(xVMwareCtrlQueryVersionReq);
    REQUEST_SIZE_MATCH(xVMwareCtrlQueryVersionReq);
 
-   _swaps(&stuff->length, n);
+   swaps(&stuff->length);
 
    return VMwareCtrlQueryVersion(client);
 }
@@ -474,15 +462,13 @@ SVMwareCtrlQueryVersion(ClientPtr client)
 static int
 SVMwareCtrlSetRes(ClientPtr client)
 {
-   register int n;
-
    REQUEST(xVMwareCtrlSetResReq);
    REQUEST_SIZE_MATCH(xVMwareCtrlSetResReq);
 
-   _swaps(&stuff->length, n);
-   _swapl(&stuff->screen, n);
-   _swapl(&stuff->x, n);
-   _swapl(&stuff->y, n);
+   swaps(&stuff->length);
+   swapl(&stuff->screen);
+   swapl(&stuff->x);
+   swapl(&stuff->y);
 
    return VMwareCtrlSetRes(client);
 }
@@ -508,14 +494,12 @@ SVMwareCtrlSetRes(ClientPtr client)
 static int
 SVMwareCtrlSetTopology(ClientPtr client)
 {
-   register int n;
-
    REQUEST(xVMwareCtrlSetTopologyReq);
    REQUEST_SIZE_MATCH(xVMwareCtrlSetTopologyReq);
 
-   _swaps(&stuff->length, n);
-   _swapl(&stuff->screen, n);
-   _swapl(&stuff->number, n);
+   swaps(&stuff->length);
+   swapl(&stuff->screen);
+   swapl(&stuff->number);
    /* Each extent is a struct of shorts. */
    SwapRestS(stuff);
 

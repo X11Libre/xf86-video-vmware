@@ -117,13 +117,13 @@ typedef uint8_t uint8;
  */
 
 static Bool drv_pre_init(ScrnInfoPtr pScrn, int flags);
-static Bool drv_screen_init(SCREEN_INIT_ARGS_DECL);
-static Bool drv_switch_mode(SWITCH_MODE_ARGS_DECL);
-static void drv_adjust_frame(ADJUST_FRAME_ARGS_DECL);
-static Bool drv_enter_vt(VT_FUNC_ARGS_DECL);
-static void drv_leave_vt(VT_FUNC_ARGS_DECL);
-static void drv_free_screen(FREE_SCREEN_ARGS_DECL);
-static ModeStatus drv_valid_mode(SCRN_ARG_TYPE arg, DisplayModePtr mode, Bool verbose,
+static Bool drv_screen_init(ScreenPtr pScreen, int argc, char **argv);
+static Bool drv_switch_mode(ScrnInfoPtr pScrn, DisplayModePtr mode);
+static void drv_adjust_frame(ScrnInfoPtr arg, int x, int y);
+static Bool drv_enter_vt(ScrnInfoPtr pScrn);
+static void drv_leave_vt(ScrnInfoPtr pScrn);
+static void drv_free_screen(ScrnInfoPtr pScrn);
+static ModeStatus drv_valid_mode(ScrnInfoPtr pScrn, DisplayModePtr mode, Bool verbose,
 			         int flags);
 
 extern void xorg_tracker_set_functions(ScrnInfoPtr scrn);
@@ -148,7 +148,7 @@ vmwgfx_modify_flags(uint32_t *flags)
  * Internal function definitions
  */
 
-static Bool drv_close_screen(CLOSE_SCREEN_ARGS_DECL);
+static Bool drv_close_screen(ScreenPtr pScreen);
 
 /*
  * Internal functions
@@ -412,7 +412,7 @@ vmwgfx_pre_init_mode(ScrnInfoPtr pScrn, int flags)
     }
 
     if (xf86IsOptionSet(ms->Options, OPTION_GUI_LAYOUT)) {
-	CONST_ABI_18_0 char *topology =
+	const char *topology =
 	    xf86GetOptValString(ms->Options, OPTION_GUI_LAYOUT);
 
 	ret = FALSE;
@@ -422,7 +422,7 @@ vmwgfx_pre_init_mode(ScrnInfoPtr pScrn, int flags)
 	}
 
     } else if (xf86IsOptionSet(ms->Options, OPTION_STATIC_XINERAMA)) {
-	CONST_ABI_18_0 char *topology =
+	const char *topology =
 	    xf86GetOptValString(ms->Options, OPTION_STATIC_XINERAMA);
 
 	ret = FALSE;
@@ -799,7 +799,6 @@ void xorg_flush(ScreenPtr pScreen)
 
 static void drv_block_handler(BLOCKHANDLER_ARGS_DECL)
 {
-    SCREEN_PTR(arg);
     modesettingPtr ms = modesettingPTR(xf86ScreenToScrn(pScreen));
 
     vmwgfx_swap(ms, pScreen, BlockHandler);
@@ -825,10 +824,10 @@ drv_create_screen_resources(ScreenPtr pScreen)
     if (!ret)
 	return ret;
 
-    drv_adjust_frame(ADJUST_FRAME_ARGS(pScrn, pScrn->frameX0, pScrn->frameY0));
+    drv_adjust_frame(pScrn, pScrn->frameX0, pScrn->frameY0);
     vmwgfx_uevent_init(pScrn, ms);
 
-    return drv_enter_vt(VT_FUNC_ARGS);
+    return drv_enter_vt(pScrn);
 }
 
 static Bool
@@ -994,7 +993,7 @@ static void drv_load_palette(ScrnInfoPtr pScrn, int numColors,
 
 
 static Bool
-drv_screen_init(SCREEN_INIT_ARGS_DECL)
+drv_screen_init(ScreenPtr pScreen, int argc, char **argv)
 {
     ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
     modesettingPtr ms = modesettingPTR(pScrn);
@@ -1247,9 +1246,8 @@ drv_screen_init(SCREEN_INIT_ARGS_DECL)
 }
 
 static void
-drv_adjust_frame(ADJUST_FRAME_ARGS_DECL)
+drv_adjust_frame(ScrnInfoPtr pScrn, int x, int y)
 {
-    SCRN_INFO_PTR(arg);
     modesettingPtr ms = modesettingPTR(pScrn);
     xf86CrtcConfigPtr config;
     xf86OutputPtr output;
@@ -1271,9 +1269,8 @@ drv_adjust_frame(ADJUST_FRAME_ARGS_DECL)
 }
 
 static void
-drv_free_screen(FREE_SCREEN_ARGS_DECL)
+drv_free_screen(ScrnInfoPtr pScrn)
 {
-    SCRN_INFO_PTR(arg);
     modesettingPtr ms = modesettingPTR(pScrn);
 
     vmwgfx_hosted_destroy(ms->hdriver, ms->hosted);
@@ -1281,9 +1278,8 @@ drv_free_screen(FREE_SCREEN_ARGS_DECL)
 }
 
 static void
-drv_leave_vt(VT_FUNC_ARGS_DECL)
+drv_leave_vt(ScrnInfoPtr pScrn)
 {
-    SCRN_INFO_PTR(arg);
     modesettingPtr ms = modesettingPTR(pScrn);
 
     if (!vmwgfx_is_hosted(ms->hdriver)) {
@@ -1305,9 +1301,8 @@ drv_leave_vt(VT_FUNC_ARGS_DECL)
  * This gets called when gaining control of the VT, and from ScreenInit().
  */
 static Bool
-drv_enter_vt(VT_FUNC_ARGS_DECL)
+drv_enter_vt(ScrnInfoPtr pScrn)
 {
-    SCRN_INFO_PTR(arg);
     modesettingPtr ms = modesettingPTR(pScrn);
 
     if (!drv_set_master(pScrn))
@@ -1322,15 +1317,13 @@ drv_enter_vt(VT_FUNC_ARGS_DECL)
 }
 
 static Bool
-drv_switch_mode(SWITCH_MODE_ARGS_DECL)
+drv_switch_mode(ScrnInfoPtr pScrn, DisplayModePtr mode)
 {
-    SCRN_INFO_PTR(arg);
-
     return xf86SetSingleMode(pScrn, mode, RR_Rotate_0);
 }
 
 static Bool
-drv_close_screen(CLOSE_SCREEN_ARGS_DECL)
+drv_close_screen(ScreenPtr pScreen)
 {
     ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
     modesettingPtr ms = modesettingPTR(pScrn);
@@ -1345,7 +1338,7 @@ drv_close_screen(CLOSE_SCREEN_ARGS_DECL)
 	xorg_dri2_close(pScreen);
 
     if (pScrn->vtSema)
-        pScrn->LeaveVT(VT_FUNC_ARGS);
+        pScrn->LeaveVT(pScrn);
 
     vmwgfx_uevent_fini(pScrn, ms);
     vmw_xv_close(pScreen);
@@ -1360,7 +1353,7 @@ drv_close_screen(CLOSE_SCREEN_ARGS_DECL)
     vmwgfx_unwrap(ms, pScreen, BlockHandler);
     vmwgfx_unwrap(ms, pScreen, CreateScreenResources);
 
-    ret = (*pScreen->CloseScreen) (CLOSE_SCREEN_ARGS);
+    ret = (*pScreen->CloseScreen) (pScreen);
     
     if (ms->xat)
 	xa_tracker_destroy(ms->xat);
@@ -1369,7 +1362,7 @@ drv_close_screen(CLOSE_SCREEN_ARGS_DECL)
 }
 
 static ModeStatus
-drv_valid_mode(SCRN_ARG_TYPE arg, DisplayModePtr mode, Bool verbose, int flags)
+drv_valid_mode(ScrnInfoPtr pScrn, DisplayModePtr mode, Bool verbose, int flags)
 {
     return MODE_OK;
 }
