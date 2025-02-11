@@ -95,7 +95,7 @@ vmwareAddDefaultMode(ScrnInfoPtr pScrn, uint32 dwidth, uint32 dheight)
 
 	snprintf(name, sizeof(name), VMW_DEFLT_MODE_NAME, dwidth, dheight);
 
-	dynModeName = xnfstrdup(name);
+	dynModeName = XNFstrdup(name);
 	if (!dynModeName || !pScrn->display)
 	    goto out_err;
 
@@ -108,7 +108,7 @@ vmwareAddDefaultMode(ScrnInfoPtr pScrn, uint32 dwidth, uint32 dheight)
 	                               sizeof(*dispModeList));
 	}
 
-	dispModeList = xnfcalloc(dispModeCount + 2, sizeof(*dispModeList));
+	dispModeList = XNFcallocarray(dispModeCount + 2, sizeof(*dispModeList));
 	if (!dispModeList)
 	    goto out_err;
 
