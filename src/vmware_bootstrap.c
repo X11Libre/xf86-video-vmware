@@ -262,10 +262,11 @@ VMwarePreinitStub(ScrnInfoPtr pScrn, int flags)
     if (pciInfo == NULL)
         return FALSE;
 
-    pScrn->chipset = xstrdup(xf86TokenToString(VMWAREChipsets,
-					       DEVICE_ID(pciInfo)));
-    if (pScrn->chipset == NULL)
-	return FALSE;
+    const char *chipset = xf86TokenToString(VMWAREChipsets, DEVICE_ID(pciInfo));
+    if (chipset == NULL)
+        return FALSE;
+
+    pScrn->chipset = strdup(chipset);
 
     return (*pScrn->PreInit)(pScrn, flags);
 };
