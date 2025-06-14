@@ -67,8 +67,8 @@ saa_create_alpha_picture(ScreenPtr pScreen,
 	return 0;
     pGC = GetScratchGC(pPixmap->drawable.depth, pScreen);
     if (!pGC) {
-        dixDestroyPixmap(pPixmap, 0);
-        return 0;
+	(*pScreen->DestroyPixmap) (pPixmap);
+	return 0;
     }
     ValidateGC(&pPixmap->drawable, pGC);
     rect.x = 0;
@@ -79,7 +79,7 @@ saa_create_alpha_picture(ScreenPtr pScreen,
     FreeScratchGC(pGC);
     pPicture = CreatePicture(0, &pPixmap->drawable, pPictFormat,
 			     0, 0, serverClient, &error);
-    dixDestroyPixmap(pPixmap, 0);
+    (*pScreen->DestroyPixmap) (pPixmap);
     return pPicture;
 }
 

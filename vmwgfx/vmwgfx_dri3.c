@@ -145,7 +145,7 @@ vmwgfx_dri3_pixmap_from_fd(ScreenPtr screen, int fd,
   out_no_damage:
     xa_surface_unref(srf);
   out_bad_format:
-    dixDestroyPixmap(pixmap, 0);
+    screen->DestroyPixmap(pixmap);
 
     return NULL;
 }

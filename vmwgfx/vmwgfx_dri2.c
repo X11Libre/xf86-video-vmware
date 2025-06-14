@@ -245,7 +245,7 @@ dri2_do_destroy_buffer(DrawablePtr pDraw, DRI2BufferPtr buffer)
 	WSBMLISTDELINIT(&vpix->sync_x_head);
 
     private->srf = NULL;
-    dixDestroyPixmap(private->pPixmap, 0);
+    pScreen->DestroyPixmap(private->pPixmap);
 }
 
 
