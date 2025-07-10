@@ -50,11 +50,12 @@ AM_PROG_CC_C_O
 AH_TOP([#include "xorg-server.h"])
 
 # Define a configure option for an alternate module directory
+PKG_PROG_PKG_CONFIG([0.25])
 AC_ARG_WITH(xorg-module-dir,
             AS_HELP_STRING([--with-xorg-module-dir=DIR],
-                           [Default xorg module directory [[default=$libdir/xorg/modules]]]),
+                           [Default xorg module directory]),
             [moduledir="$withval"],
-            [moduledir="$libdir/xorg/modules"])
+            [moduledir=`$PKG_CONFIG --variable=moduledir xorg-server`])
 
 # Define a configure option to build the vmwarectrl client tool
 AC_ARG_ENABLE(vmwarectrl-client,
