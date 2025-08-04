@@ -93,8 +93,7 @@ vmwgfx_xa_surface_redefine(struct vmwgfx_saa_pixmap *vpix,
 /*
  * Create an xa format from a PICT format.
  */
-enum xa_formats
-vmwgfx_xa_format(enum _PictFormatShort format)
+enum xa_formats vmwgfx_xa_format(PictFormatShort format)
 {
     uint32_t ptype = PICT_FORMAT_TYPE(format);
 
@@ -167,9 +166,7 @@ vmwgfx_old_format_compatible(enum xa_formats format,
 /*
  * Choose format and flags for a composite dst surface.
  */
-Bool
-vmwgfx_hw_composite_dst_stage(PixmapPtr pixmap,
-			      enum _PictFormatShort pict_format)
+Bool vmwgfx_hw_composite_dst_stage(PixmapPtr pixmap, PictFormatShort pict_format)
 {
     struct vmwgfx_saa *vsaa =
 	to_vmwgfx_saa(saa_get_driver(pixmap->drawable.pScreen));
@@ -202,9 +199,7 @@ vmwgfx_hw_composite_dst_stage(PixmapPtr pixmap,
 /*
  * Choose format and flags for a composite src surface.
  */
-Bool
-vmwgfx_hw_composite_src_stage(PixmapPtr pixmap,
-			      enum _PictFormatShort pict_format)
+Bool vmwgfx_hw_composite_src_stage(PixmapPtr pixmap, PictFormatShort pict_format)
 {
     struct vmwgfx_saa *vsaa =
 	to_vmwgfx_saa(saa_get_driver(pixmap->drawable.pScreen));
