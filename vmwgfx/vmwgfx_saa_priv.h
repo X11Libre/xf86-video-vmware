@@ -85,7 +85,7 @@ vmwgfx_create_hw(struct vmwgfx_saa *vsaa,
  * vmwgfx_xa_surface.c
  */
 
-enum xa_formats vmwgfx_xa_format(PictFormatShort format);
+enum xa_formats vmwgfx_xa_format(pixman_format_code_t format);
 Bool
 vmwgfx_hw_validate(PixmapPtr pixmap, RegionPtr region);
 Bool
@@ -93,8 +93,8 @@ vmwgfx_hw_dri2_stage(PixmapPtr pixmap, unsigned int depth);
 Bool
 vmwgfx_hw_accel_stage(PixmapPtr pixmap, unsigned int depth,
 		      uint32_t add_flags, uint32_t remove_flags);
-Bool vmwgfx_hw_composite_src_stage(PixmapPtr pixmap, PictFormatShort pict_format);
-Bool vmwgfx_hw_composite_dst_stage(PixmapPtr pixmap, PictFormatShort pict_format);
+Bool vmwgfx_hw_composite_src_stage(PixmapPtr pixmap, pixman_format_code_t pict_format);
+Bool vmwgfx_hw_composite_dst_stage(PixmapPtr pixmap, pixman_format_code_t pict_format);
 Bool
 vmwgfx_hw_commit(PixmapPtr pixmap);
 
