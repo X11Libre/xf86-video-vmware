@@ -312,7 +312,7 @@ saa_copy_composite(CARD8 op,
 	return FALSE;
 
     if (op == PictOpSrc ||
-	(op == PictOpOver && PICT_FORMAT_A(pSrc->format) == 0 &&
+	(op == PictOpOver && PIXMAN_FORMAT_A(pSrc->format) == 0 &&
 	 pMask == NULL)) {
 
 	int xoff, yoff;

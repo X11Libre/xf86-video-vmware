@@ -102,12 +102,12 @@ enum xa_formats vmwgfx_xa_format(PictFormatShort format)
 	vmwgfx_stype_map[ptype] == xa_type_other)
 	return xa_format_unknown;
 
-    return xa_format(PICT_FORMAT_BPP(format),
+    return xa_format(PIXMAN_FORMAT_BPP(format),
 		     vmwgfx_stype_map[ptype],
-		     PICT_FORMAT_A(format),
-		     PICT_FORMAT_R(format),
-		     PICT_FORMAT_G(format),
-		     PICT_FORMAT_B(format));
+		     PIXMAN_FORMAT_A(format),
+		     PIXMAN_FORMAT_R(format),
+		     PIXMAN_FORMAT_G(format),
+		     PIXMAN_FORMAT_B(format));
 }
 
 /*
