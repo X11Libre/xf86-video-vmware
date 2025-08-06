@@ -960,7 +960,7 @@ vmwgfx_copy_prepare(struct saa_driver *driver,
 	    if (!vmwgfx_hw_accel_stage(src_pixmap, 0, XA_FLAG_RENDER_TARGET, 0))
 		return FALSE;
 	} else {
-	    if (PICT_FORMAT_TYPE(src_vpix->base.src_format) != PICT_TYPE_ARGB ||
+	    if (PIXMAN_FORMAT_TYPE(src_vpix->base.src_format) != PICT_TYPE_ARGB ||
 		!vmwgfx_hw_composite_src_stage(src_pixmap, src_vpix->base.src_format))
 		return FALSE;
 	}
@@ -969,7 +969,7 @@ vmwgfx_copy_prepare(struct saa_driver *driver,
 	    if (!vmwgfx_hw_accel_stage(dst_pixmap, 0, XA_FLAG_RENDER_TARGET, 0))
 		return FALSE;
 	} else {
-	    if (PICT_FORMAT_TYPE(dst_vpix->base.dst_format) != PICT_TYPE_ARGB ||
+	    if (PIXMAN_FORMAT_TYPE(dst_vpix->base.dst_format) != PICT_TYPE_ARGB ||
 		!vmwgfx_hw_composite_dst_stage(dst_pixmap, dst_vpix->base.dst_format))
 		return FALSE;
 	}
