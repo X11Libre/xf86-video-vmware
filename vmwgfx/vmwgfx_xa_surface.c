@@ -95,7 +95,7 @@ vmwgfx_xa_surface_redefine(struct vmwgfx_saa_pixmap *vpix,
  */
 enum xa_formats vmwgfx_xa_format(PictFormatShort format)
 {
-    uint32_t ptype = PICT_FORMAT_TYPE(format);
+    uint32_t ptype = PIXMAN_FORMAT_TYPE(format);
 
     if (ptype >= vmwgfx_stype_map_size ||
 	vmwgfx_stype_map[ptype] == 0 ||
