@@ -76,8 +76,8 @@ struct saa_pixmap {
     void *addr;
     void *override;
     enum saa_pixmap_loc auth_loc;
-    PictFormatShort src_format;
-    PictFormatShort dst_format;
+    pixman_format_code_t src_format;
+    pixman_format_code_t dst_format;
     uint32_t pad[16];
 };
 
