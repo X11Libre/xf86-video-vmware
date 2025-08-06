@@ -33,11 +33,11 @@
 
 
 static const enum xa_surface_type vmwgfx_stype_map[] = {
-  [PICT_TYPE_OTHER] = xa_type_other,
-  [PICT_TYPE_A] = xa_type_a,
-  [PICT_TYPE_ARGB] = xa_type_argb,
-  [PICT_TYPE_ABGR] = xa_type_abgr,
-  [PICT_TYPE_BGRA] = xa_type_bgra
+  [PIXMAN_TYPE_OTHER] = xa_type_other,
+  [PIXMAN_TYPE_A] = xa_type_a,
+  [PIXMAN_TYPE_ARGB] = xa_type_argb,
+  [PIXMAN_TYPE_ABGR] = xa_type_abgr,
+  [PIXMAN_TYPE_BGRA] = xa_type_bgra
 };
 
 static const unsigned int vmwgfx_stype_map_size =
