@@ -54,7 +54,7 @@ saa_create_alpha_picture(ScreenPtr pScreen,
 
     if (!pPictFormat) {
 	if (pDst->polyEdge == PolyEdgeSharp)
-	    pPictFormat = PictureMatchFormat(pScreen, 1, PICT_a1);
+	    pPictFormat = PictureMatchFormat(pScreen, 1, PIXMAN_a1);
 	else
 	    pPictFormat = PictureMatchFormat(pScreen, 8, PICT_a8);
 	if (!pPictFormat)
@@ -138,7 +138,7 @@ saa_trapezoids(CARD8 op, PicturePtr pSrc, PicturePtr pDst,
 	FreePicture(pPicture, 0);
     } else {
 	if (pDst->polyEdge == PolyEdgeSharp)
-	    maskFormat = PictureMatchFormat(pScreen, 1, PICT_a1);
+	    maskFormat = PictureMatchFormat(pScreen, 1, PIXMAN_a1);
 	else
 	    maskFormat = PictureMatchFormat(pScreen, 8, PICT_a8);
 	for (; ntrap; ntrap--, traps++)
@@ -198,7 +198,7 @@ saa_triangles(CARD8 op, PicturePtr pSrc, PicturePtr pDst,
 	FreePicture(pPicture, 0);
     } else {
 	if (pDst->polyEdge == PolyEdgeSharp)
-	    maskFormat = PictureMatchFormat(pScreen, 1, PICT_a1);
+	    maskFormat = PictureMatchFormat(pScreen, 1, PIXMAN_a1);
 	else
 	    maskFormat = PictureMatchFormat(pScreen, 8, PICT_a8);
 
