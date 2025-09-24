@@ -36,6 +36,9 @@
 #include "config.h"
 #endif
 
+#include <xorg-server.h>
+
+#include "extinit.h"
 #include "dixstruct.h"
 #include "extnsionst.h"
 #include <X11/X.h>
