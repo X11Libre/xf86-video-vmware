@@ -1549,7 +1549,7 @@ vmwgfx_scanout_ref(struct vmwgfx_screen_entry  *entry,
 			 &vpix->fb_id) != 0)
 	    goto out_no_fb;;
     }
-    pixmap->refcnt += 1;
+    dixPixmapGet(pixmap);
     WSBMLISTADDTAIL(&entry->scanout_head, &vpix->scanout_list);
     return vpix->fb_id;
 
@@ -1591,7 +1591,7 @@ vmwgfx_scanout_unref(struct vmwgfx_screen_entry *entry)
     }
 
     entry->pixmap = NULL;
-    dixDestroyPixmap(pixmap, 0);
+    dixPixmapPut(pixmap);
 }
 
 void

@@ -43,7 +43,6 @@ saa_create_alpha_picture(ScreenPtr pScreen,
 			 PicturePtr pDst,
 			 PictFormatPtr pPictFormat, CARD16 width, CARD16 height)
 {
-    PixmapPtr pPixmap;
     PicturePtr pPicture;
     GCPtr pGC;
     int error;
@@ -61,13 +60,12 @@ saa_create_alpha_picture(ScreenPtr pScreen,
 	    return 0;
     }
 
-    pPixmap = (*pScreen->CreatePixmap) (pScreen, width, height,
-					pPictFormat->depth, 0);
+    PixmapPtr pPixmap = dixPixmapCreate(pScreen, width, height, pPictFormat->depth, 0);
     if (!pPixmap)
 	return 0;
     pGC = GetScratchGC(pPixmap->drawable.depth, pScreen);
     if (!pGC) {
-        dixDestroyPixmap(pPixmap, 0);
+        dixPixmapPut(pPixmap);
         return 0;
     }
     ValidateGC(&pPixmap->drawable, pGC);
@@ -79,7 +77,7 @@ saa_create_alpha_picture(ScreenPtr pScreen,
     FreeScratchGC(pGC);
     pPicture = CreatePicture(0, &pPixmap->drawable, pPictFormat,
 			     0, 0, serverClient, &error);
-    dixDestroyPixmap(pPixmap, 0);
+    dixPixmapPut(pPixmap);
     return pPicture;
 }
 
