@@ -46,11 +46,6 @@
 #include "vmware.h"
 #include "vmwarectrlproto.h"
 
-#ifndef HAVE_XORG_SERVER_1_5_0
-#include <xf86_ansic.h>
-#include <xf86_libc.h>
-#endif
-
 /*
  *----------------------------------------------------------------------------
  *
@@ -310,9 +305,7 @@ VMwareCtrlDoSetTopology(ScrnInfoPtr pScrn,
 	     */
 
             vmwareNextXineramaState(pVMWARE);
-#ifdef HAVE_XORG_SERVER_1_2_0
             RRSendConfigNotify(pScrn->pScreen);
-#endif
             vmwareSendSVGACmdUpdateFullScreen(pVMWARE);
 
             return TRUE;

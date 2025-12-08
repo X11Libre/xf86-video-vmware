@@ -28,36 +28,10 @@
 #ifndef COMPAT_API_H
 #define COMPAT_API_H
 
-#define SCRN_ARG_TYPE ScrnInfoPtr
-#define SCRN_INFO_PTR(arg1) ScrnInfoPtr pScrn = (arg1)
-
-#define SCREEN_ARG_TYPE ScreenPtr
-#define SCREEN_PTR(arg1) ScreenPtr pScreen = (arg1)
-
-#define SCREEN_INIT_ARGS_DECL ScreenPtr pScreen, int argc, char **argv
-
 #if ABI_VIDEODRV_VERSION >= SET_ABI_VERSION(23, 0)
-#define BLOCKHANDLER_ARGS_DECL ScreenPtr arg, pointer pTimeout
-#define BLOCKHANDLER_ARGS arg, pTimeout
+#define BLOCKHANDLER_ARGS_DECL ScreenPtr pScreen, pointer pTimeout
+#define BLOCKHANDLER_ARGS pScreen, pTimeout
 #else
-#define BLOCKHANDLER_ARGS_DECL ScreenPtr arg, pointer pTimeout, pointer pReadmask
-#define BLOCKHANDLER_ARGS arg, pTimeout, pReadmask
-#endif
-
-#define CLOSE_SCREEN_ARGS_DECL ScreenPtr pScreen
-#define CLOSE_SCREEN_ARGS pScreen
-
-#define ADJUST_FRAME_ARGS_DECL ScrnInfoPtr arg, int x, int y
-#define ADJUST_FRAME_ARGS(arg, x, y) arg, x, y
-
-#define SWITCH_MODE_ARGS_DECL ScrnInfoPtr arg, DisplayModePtr mode
-#define SWITCH_MODE_ARGS(arg, m) arg, m
-
-#define FREE_SCREEN_ARGS_DECL ScrnInfoPtr arg
-
-#define VT_FUNC_ARGS_DECL ScrnInfoPtr arg
-#define VT_FUNC_ARGS pScrn
-
-#define XF86_SCRN_ARG(x) (x)
-
+#define BLOCKHANDLER_ARGS_DECL ScreenPtr pScreen, pointer pTimeout, pointer pReadmask
+#define BLOCKHANDLER_ARGS pScreen, pTimeout, pReadmask
 #endif

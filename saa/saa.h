@@ -175,7 +175,7 @@ extern _X_EXPORT RegionPtr
 saa_bitmap_to_region(PixmapPtr pPix);
 
 extern _X_EXPORT Bool
-saa_close_screen(CLOSE_SCREEN_ARGS_DECL);
+saa_close_screen(ScreenPtr pScreen);
 
 extern _X_EXPORT Bool
 saa_gc_reads_destination(DrawablePtr pDrawable, GCPtr pGC);
