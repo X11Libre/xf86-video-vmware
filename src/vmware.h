@@ -17,11 +17,7 @@
 
 #include <X11/extensions/panoramiXproto.h>
 
-#ifdef XSERVER_LIBPCIACCESS
 #include <pciaccess.h>
-#else
-#include "xf86Resources.h"
-#endif
 
 #include "compiler.h"	        /* inb/outb */
 
@@ -72,12 +68,7 @@ typedef xXineramaScreenInfo VMWAREXineramaRec, *VMWAREXineramaPtr;
 
 typedef struct {
     EntityInfoPtr pEnt;
-#ifdef XSERVER_LIBPCIACCESS
     struct pci_device *PciInfo;
-#else
-    pciVideoPtr PciInfo;
-    PCITAG PciTag;
-#endif
     Bool Primary;
     int depth;
     int bitsPerPixel;
@@ -196,19 +187,11 @@ typedef struct {
 /* Undefine this to kill all acceleration */
 #define ACCELERATE_OPS
 
-#ifdef XSERVER_LIBPCIACCESS
 #define VENDOR_ID(p)      (p)->vendor_id
 #define DEVICE_ID(p)      (p)->device_id
 #define SUBVENDOR_ID(p)   (p)->subvendor_id
 #define SUBSYS_ID(p)      (p)->subdevice_id
 #define CHIP_REVISION(p)  (p)->revision
-#else
-#define VENDOR_ID(p)      (p)->vendor
-#define DEVICE_ID(p)      (p)->chipType
-#define SUBVENDOR_ID(p)   (p)->subsysVendor
-#define SUBSYS_ID(p)      (p)->subsysCard
-#define CHIP_REVISION(p)  (p)->chipRev
-#endif
 
 void vmwareWriteReg(
    VMWAREPtr pVMWARE, int index, CARD32 value

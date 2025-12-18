@@ -296,11 +296,7 @@ VMWAREPreInit(ScrnInfoPtr pScrn, int flags)
            SVGA_LEGACY_BASE_PORT + SVGA_VALUE_PORT*sizeof(uint32);
     } else {
         /* Note:  This setting of valueReg causes unaligned I/O */
-#ifdef XSERVER_LIBPCIACCESS
         pVMWARE->portIOBase = pVMWARE->PciInfo->regions[0].base_addr;
-#else
-        pVMWARE->portIOBase = pVMWARE->PciInfo->ioBase[0];
-#endif
         pVMWARE->indexReg = domainIOBase +
            pVMWARE->portIOBase + SVGA_INDEX_PORT;
         pVMWARE->valueReg = domainIOBase +
@@ -338,10 +334,6 @@ VMWAREPreInit(ScrnInfoPtr pScrn, int flags)
     }
     pVMWARE->suspensionSavedRegId = id;
 
-#ifndef XSERVER_LIBPCIACCESS
-    pVMWARE->PciTag = pciTag(pVMWARE->PciInfo->bus, pVMWARE->PciInfo->device,
-                             pVMWARE->PciInfo->func);
-#endif
     pVMWARE->Primary = xf86IsPrimaryPci(pVMWARE->PciInfo);
 
     pScrn->monitor = pScrn->confScreen->monitor;
@@ -682,7 +674,6 @@ static Bool
 VMWAREMapMem(ScrnInfoPtr pScrn)
 {
     VMWAREPtr pVMWARE = VMWAREPTR(pScrn);
-#ifdef XSERVER_LIBPCIACCESS
     int err;
     struct pci_device *const device = pVMWARE->PciInfo;
     void *fbBase;
@@ -699,12 +690,6 @@ VMWAREMapMem(ScrnInfoPtr pScrn)
        return FALSE;
    }
    pVMWARE->FbBase = fbBase;
-#else
-    pVMWARE->FbBase = xf86MapPciMem(pScrn->scrnIndex, 0,
-                                    pVMWARE->PciTag,
-                                    pVMWARE->memPhysBase,
-                                    pVMWARE->videoRam);
-#endif
     if (!pVMWARE->FbBase)
         return FALSE;
 
@@ -723,11 +708,7 @@ VMWAREUnmapMem(ScrnInfoPtr pScrn)
 
     VmwareLog(("Unmapped: %p/%u\n", pVMWARE->FbBase, pVMWARE->videoRam));
 
-#ifdef XSERVER_LIBPCIACCESS
     pci_device_unmap_range(pVMWARE->PciInfo, pVMWARE->FbBase, pVMWARE->videoRam);
-#else
-    xf86UnMapVidMem(pScrn->scrnIndex, pVMWARE->FbBase, pVMWARE->videoRam);
-#endif
     pVMWARE->FbBase = NULL;
     return TRUE;
 }
@@ -998,11 +979,9 @@ static void
 VMWAREInitFIFO(ScrnInfoPtr pScrn)
 {
     VMWAREPtr pVMWARE = VMWAREPTR(pScrn);
-#ifdef XSERVER_LIBPCIACCESS
     struct pci_device *const device = pVMWARE->PciInfo;
     int err;
     void *mmioVirtBase;
-#endif
     volatile CARD32* vmwareFIFO;
     Bool extendedFifo;
     int min;
@@ -1011,7 +990,6 @@ VMWAREInitFIFO(ScrnInfoPtr pScrn)
 
     pVMWARE->mmioPhysBase = vmwareReadReg(pVMWARE, SVGA_REG_MEM_START);
     pVMWARE->mmioSize = vmwareReadReg(pVMWARE, SVGA_REG_MEM_SIZE) & ~3;
-#ifdef XSERVER_LIBPCIACCESS
     err = pci_device_map_range(device, pVMWARE->mmioPhysBase,
                                pVMWARE->mmioSize,
                                PCI_DEV_MAP_FLAG_WRITABLE,
@@ -1023,12 +1001,6 @@ VMWAREInitFIFO(ScrnInfoPtr pScrn)
         return;
     }
     pVMWARE->mmioVirtBase = mmioVirtBase;
-#else
-    pVMWARE->mmioVirtBase = xf86MapPciMem(pScrn->scrnIndex, VIDMEM_MMIO,
-                                          pVMWARE->PciTag,
-                                          pVMWARE->mmioPhysBase,
-                                          pVMWARE->mmioSize);
-#endif
     vmwareFIFO = pVMWARE->vmwareFIFO = (CARD32*)pVMWARE->mmioVirtBase;
 
     extendedFifo = pVMWARE->vmwareCapability & SVGA_CAP_EXTENDED_FIFO;
@@ -1052,11 +1024,7 @@ VMWAREStopFIFO(ScrnInfoPtr pScrn)
     TRACEPOINT
 
     vmwareWriteReg(pVMWARE, SVGA_REG_CONFIG_DONE, 0);
-#ifdef XSERVER_LIBPCIACCESS
     pci_device_unmap_range(pVMWARE->PciInfo, pVMWARE->mmioVirtBase, pVMWARE->mmioSize);
-#else
-    xf86UnMapVidMem(pScrn->scrnIndex, pVMWARE->mmioVirtBase, pVMWARE->mmioSize);
-#endif
 }
 
 static Bool

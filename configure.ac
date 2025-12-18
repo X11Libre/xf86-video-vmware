@@ -96,21 +96,7 @@ PKG_CHECK_EXISTS([xorg-server >= 1.12.0],
 
 # Obtain compiler/linker options for the vmwarectrl client tool
 PKG_CHECK_MODULES(X11, x11 xext)
-
-# Checks for libraries.
-
-save_CFLAGS="$CFLAGS"
-CFLAGS="$XORG_CFLAGS"
-AC_CHECK_DECL(XSERVER_LIBPCIACCESS,
-             [XSERVER_LIBPCIACCESS=yes], [XSERVER_LIBPCIACCESS=no],
-             [#include "xorg-server.h"])
-CFLAGS="$save_CFLAGS"
-
-if test x$XSERVER_LIBPCIACCESS = xyes; then
-	PKG_CHECK_MODULES([PCIACCESS], [pciaccess >= 0.8.0])
-fi
-
-AM_CONDITIONAL(XSERVER_LIBPCIACCESS, test "x$XSERVER_LIBPCIACCESS" = xyes)
+PKG_CHECK_MODULES([PCIACCESS], [pciaccess >= 0.8.0])
 
 AC_SUBST([moduledir])
 

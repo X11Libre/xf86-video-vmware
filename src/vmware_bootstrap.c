@@ -34,11 +34,6 @@
 #include "vmware_bootstrap.h"
 #include <stdint.h>
 
-#ifndef XSERVER_LIBPCIACCESS
-#include "vm_basic_types.h"
-#include "svga_reg.h"
-#endif
-
 #ifndef HAVE_XORG_SERVER_1_5_0
 #include <xf86_ansic.h>
 #include <xf86_libc.h>
@@ -72,12 +67,7 @@ static char vmware_driver_name[] = VMWARE_DRIVER_NAME;
     VMW_STRING(PACKAGE_VERSION_MAJOR) "." VMW_STRING(PACKAGE_VERSION_MINOR) \
     "." VMW_STRING(PACKAGE_VERSION_PATCHLEVEL)
 
-#ifndef XSERVER_LIBPCIACCESS
-static const char VMWAREBuildStr[] = "VMware Guest X Server "
-    VMWARE_DRIVER_VERSION_STRING " - build=$Name$\n";
-#else
 static char vmware_name[] = VMWARE_NAME;
-#endif
 
 /*
  * Standard four digit version string expected by VMware Tools installer.
@@ -98,31 +88,13 @@ __attribute__((section(".modinfo"),unused)) =
 #endif /*VMW_SUBPATCH*/
 #endif
 
-#ifndef XSERVER_LIBPCIACCESS
-static resRange vmwareLegacyRes[] = {
-    { ResExcIoBlock, SVGA_LEGACY_BASE_PORT,
-      SVGA_LEGACY_BASE_PORT + SVGA_NUM_PORTS*sizeof(uint32)},
-    _VGA_EXCLUSIVE, _END
-};
-#else
 #define vmwareLegacyRes NULL
-#endif
 
-#ifdef XSERVER_LIBPCIACCESS
 #define VENDOR_ID(p)      (p)->vendor_id
 #define DEVICE_ID(p)      (p)->device_id
 #define SUBVENDOR_ID(p)   (p)->subvendor_id
 #define SUBSYS_ID(p)      (p)->subdevice_id
 #define CHIP_REVISION(p)  (p)->revision
-#else
-#define VENDOR_ID(p)      (p)->vendor
-#define DEVICE_ID(p)      (p)->chipType
-#define SUBVENDOR_ID(p)   (p)->subsysVendor
-#define SUBSYS_ID(p)      (p)->subsysCard
-#define CHIP_REVISION(p)  (p)->chipRev
-#endif
-
-#ifdef XSERVER_LIBPCIACCESS
 
 #define VMWARE_DEVICE_MATCH(d, i) \
     {PCI_VENDOR_ID_VMWARE, (d), PCI_MATCH_ANY, PCI_MATCH_ANY, 0, 0, (i) }
@@ -132,7 +104,6 @@ static const struct pci_id_match VMwareDeviceMatch[] = {
     VMWARE_DEVICE_MATCH (PCI_DEVICE_ID_VMWARE_SVGA, 0 ),
     { 0, 0, 0 },
 };
-#endif
 
 /*
  * Currently, even the PCI obedient 0405 chip still only obeys IOSE and
@@ -199,11 +170,7 @@ vmwgfx_hosted_detect(void);
 static Bool
 VMwarePreinitStub(ScrnInfoPtr pScrn, int flags)
 {
-#ifdef XSERVER_LIBPCIACCESS
     struct pci_device *pciInfo;
-#else
-    pciVideoPtr pciInfo;
-#endif /* XSERVER_LIBPCIACCESS */
     EntityInfoPtr pEnt;
 
     pScrn->PreInit = pScrn->driverPrivate;
@@ -250,7 +217,6 @@ VMwarePreinitStub(ScrnInfoPtr pScrn, int flags)
     return (*pScrn->PreInit)(pScrn, flags);
 };
 
-#ifdef XSERVER_LIBPCIACCESS
 static Bool
 VMwarePciProbe (DriverPtr           drv,
                 int                 entity_num,
@@ -287,115 +253,6 @@ VMwarePciProbe (DriverPtr           drv,
     }
     return scrn != NULL;
 }
-#else
-
-/*
- *----------------------------------------------------------------------
- *
- *  RewriteTagString --
- *
- *      Rewrites the given string, removing the $Name$, and
- *      replacing it with the contents.  The output string must
- *      have enough room, or else.
- *
- * Results:
- *
- *      Output string updated.
- *
- * Side effects:
- *      None.
- *
- *----------------------------------------------------------------------
- */
-
-static void
-RewriteTagString(const char *istr, char *ostr, int osize)
-{
-    int chr;
-    Bool inTag = FALSE;
-    char *op = ostr;
-
-    do {
-	chr = *istr++;
-	if (chr == '$') {
-	    if (inTag) {
-		inTag = FALSE;
-		for (; op > ostr && op[-1] == ' '; op--) {
-		}
-		continue;
-	    }
-	    if (strncmp(istr, "Name:", 5) == 0) {
-		istr += 5;
-		istr += strspn(istr, " ");
-		inTag = TRUE;
-		continue;
-	    }
-	}
-	*op++ = chr;
-    } while (chr);
-}
-
-static Bool
-VMWAREProbe(DriverPtr drv, int flags)
-{
-    int numDevSections, numUsed;
-    GDevPtr *devSections;
-    int *usedChips;
-    int i;
-    Bool foundScreen = FALSE;
-    char buildString[sizeof(VMWAREBuildStr)];
-
-    RewriteTagString(VMWAREBuildStr, buildString, sizeof(VMWAREBuildStr));
-    xf86MsgVerb(X_PROBED, 4, "%s", buildString);
-
-    numDevSections = xf86MatchDevice(VMWARE_DRIVER_NAME, &devSections);
-    if (numDevSections <= 0) {
-#ifdef DEBUG
-        xf86MsgVerb(X_ERROR, 0, "No vmware driver section\n");
-#endif
-        return FALSE;
-    }
-    if (xf86GetPciVideoInfo()) {
-        VmwareLog(("Some PCI Video Info Exists\n"));
-        numUsed = xf86MatchPciInstances(VMWARE_NAME, PCI_VENDOR_ID_VMWARE,
-                                        VMWAREChipsets, VMWAREPciChipsets, devSections,
-                                        numDevSections, drv, &usedChips);
-        free(devSections);
-        if (numUsed <= 0)
-            return FALSE;
-        if (flags & PROBE_DETECT)
-            foundScreen = TRUE;
-        else
-            for (i = 0; i < numUsed; i++) {
-                ScrnInfoPtr pScrn = NULL;
-
-                VmwareLog(("Even some VMware SVGA PCI instances exists\n"));
-                pScrn = xf86ConfigPciEntity(pScrn, flags, usedChips[i],
-                                            VMWAREPciChipsets, NULL, NULL, NULL,
-                                            NULL, NULL);
-                if (pScrn) {
-                    VmwareLog(("And even configuration succeeded\n"));
-                    pScrn->driverVersion = VMWARE_DRIVER_VERSION;
-                    pScrn->driverName = VMWARE_DRIVER_NAME;
-                    pScrn->name = VMWARE_NAME;
-                    pScrn->Probe = VMWAREProbe;
-
-#ifdef BUILD_VMWGFX
-		    vmwgfx_hookup(pScrn);
-#else
-		    vmwlegacy_hookup(pScrn);
-#endif /* defined(BUILD_VMWGFX) */
-
-		    pScrn->driverPrivate = pScrn->PreInit;
-		    pScrn->PreInit = VMwarePreinitStub;
-                    foundScreen = TRUE;
-                }
-            }
-        free(usedChips);
-    }
-    return foundScreen;
-}
-#endif
 
 #ifdef XSERVER_PLATFORM_BUS
 static Bool
@@ -498,24 +355,15 @@ _X_EXPORT DriverRec vmware = {
     VMWARE_DRIVER_VERSION,
     vmware_driver_name,
     VMWAREIdentify,
-#ifdef XSERVER_LIBPCIACCESS
     NULL,
-#else
-    VMWAREProbe,
-#endif
     VMWAREAvailableOptions,
     NULL,
     0,
 #if VMWARE_DRIVER_FUNC
     VMWareDriverFunc,
 #endif
-#ifdef XSERVER_LIBPCIACCESS
     VMwareDeviceMatch,
     VMwarePciProbe,
-#else
-    NULL,
-    NULL,
-#endif
 #ifdef XSERVER_PLATFORM_BUS
     VMwarePlatformProbe,
 #else

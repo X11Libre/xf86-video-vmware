@@ -49,9 +49,6 @@
 #include "xf86cmap.h"
 #include "xf86xv.h"
 #include "xorgVersion.h"
-#ifndef XSERVER_LIBPCIACCESS
-#error "libpciaccess needed"
-#endif
 
 #include <pciaccess.h>
 
