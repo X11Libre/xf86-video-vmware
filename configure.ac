@@ -145,9 +145,6 @@ if test x$BUILD_VMWGFX = xyes; then
 			 [Has version 2.4.96 or greater of libdrm])])
 fi
 
-DRIVER_NAME=vmware
-AC_SUBST([DRIVER_NAME])
-
 AC_MSG_CHECKING([whether to build Kernel Mode Setting and 3D])
 if test x$BUILD_VMWGFX = xyes; then
 	AC_MSG_RESULT([yes])
