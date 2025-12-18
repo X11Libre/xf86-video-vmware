@@ -7,9 +7,7 @@ char rcsId_vmware[] =
     "Id: vmware.c,v 1.11 2001/02/23 02:10:39 yoel Exp $";
 #endif
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 /*
  * TODO: support the vmware linux kernel fb driver (Option "UseFBDev").

@@ -30,14 +30,10 @@
 #ifndef _SAA_PRIV_H
 #define _SAA_PRIV_H
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#else
+
 #include <xorg-server.h>
-#endif
+
 #include "xf86.h"
 
 #include "saa.h"

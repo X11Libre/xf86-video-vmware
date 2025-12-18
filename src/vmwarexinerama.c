@@ -30,11 +30,7 @@
  *
  *      The implementation of the Xinerama protocol extension.
  */
-
-
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include <xorg-server.h>
 

@@ -6,10 +6,7 @@
 #ifndef VMWARE_H
 #define VMWARE_H
 
-
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #ifdef HAVE_XORG_SERVER_1_1_0
 #include <string.h>

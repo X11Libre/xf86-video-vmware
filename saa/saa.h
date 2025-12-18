@@ -32,14 +32,9 @@
 #ifndef _SAA_H_
 #define _SAA_H_
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#else
 #include <xorg-server.h>
-#endif
+
 #include <xf86.h>
 #include <damage.h>
 #include <picturestr.h>

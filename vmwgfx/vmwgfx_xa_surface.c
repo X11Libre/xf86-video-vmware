@@ -24,9 +24,7 @@
  *
  * Author: Thomas Hellstrom <thellstrom@vmware.com>
  */
-#ifdef _HAVE_CONFIG_H_
 #include "config.h"
-#endif
 
 #include <xorg-server.h>
 #include "vmwgfx_saa_priv.h"

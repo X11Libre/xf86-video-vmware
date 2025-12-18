@@ -27,9 +27,7 @@
  * Author: Jakob Bornecrantz <wallbraker@gmail.com>
  *
  */
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include "xorg-server.h"
 #include <xf86drm.h>

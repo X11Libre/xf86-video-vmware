@@ -28,10 +28,7 @@
  * The code in this file translates XRender PICT composite stuff
  * to fit the libxatracker API.
  */
-
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include <pixman.h>
 #include <picturestr.h>

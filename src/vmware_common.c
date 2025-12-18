@@ -24,9 +24,7 @@
  *
  * Author: Unknown at vmware
  */
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include <xf86.h>
 #include "vmware_common.h"

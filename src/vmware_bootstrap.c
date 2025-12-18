@@ -25,9 +25,7 @@
  * Author: Unknown at vmware
  * Author: Thomas Hellstrom <thellstrom@vmware.com>
  */
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include "xf86.h"
 #include "compiler.h"

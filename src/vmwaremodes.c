@@ -31,9 +31,8 @@
  *      Provide additional modes for the driver.
  */
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
+
 #include "xf86.h"
 #ifdef HAVE_XORG_SERVER_1_2_0
 #include <xf86Modes.h>

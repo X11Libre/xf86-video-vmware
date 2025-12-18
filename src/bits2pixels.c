@@ -8,9 +8,7 @@ char rcsId_bits2pixels[] = "Id: bits2pixels.c,v 1.6 2001/01/26 23:32:15 yoel Exp
 #define FILECODE "F(814)"
 #endif
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 /*
  * bits2pixels.c --
