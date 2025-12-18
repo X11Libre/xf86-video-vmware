@@ -34,9 +34,7 @@
 #include "config.h"
 
 #include "xf86.h"
-#ifdef HAVE_XORG_SERVER_1_2_0
 #include <xf86Modes.h>
-#endif
 #include "vm_basic_types.h"
 #include "vmware.h"
 #include "common_compat.h"
@@ -76,7 +74,6 @@ vmwareAddDefaultMode(ScrnInfoPtr pScrn, uint32 dwidth, uint32 dheight)
 	goto out_err;
     }
 
-#ifdef HAVE_XORG_SERVER_1_2_0
     if (dwidth && dheight) {
 	MonPtr monitor = pScrn->monitor;
 	DisplayModePtr mode = NULL;
@@ -156,9 +153,6 @@ vmwareAddDefaultMode(ScrnInfoPtr pScrn, uint32 dwidth, uint32 dheight)
     }
 
     *monitorModes = xf86ModesAdd(*monitorModes, modes);
-#else
-    (void) modes;
-#endif
     return;
   out_err:
     xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "Failed to add default mode.");
