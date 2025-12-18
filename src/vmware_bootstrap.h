@@ -56,10 +56,8 @@ void
 vmwgfx_modify_flags(uint32_t *flags);
 #endif /* defined(BUILD_VMWGFX) */
 
-#ifdef XFree86LOADER
 void
 VMWARERefSymLists(void);
-#endif	/* XFree86LOADER */
 
 /*#define DEBUG_LOGGING*/
 #ifdef DEBUG_LOGGING

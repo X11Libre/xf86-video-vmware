@@ -153,7 +153,6 @@ static SymTabRec VMWAREChipsets[] = {
     { -1,                  NULL }
 };
 
-#ifdef XFree86LOADER
 static XF86ModuleVersionInfo vmwareVersRec = {
     VMWARE_DRIVER_NAME,
     MODULEVENDORSTRING,
@@ -166,7 +165,6 @@ static XF86ModuleVersionInfo vmwareVersRec = {
     MOD_CLASS_VIDEODRV,
     { 0, 0, 0, 0}
 };
-#endif	/* XFree86LOADER */
 
 static const OptionInfoRec VMWAREOptions[] = {
     { OPTION_HW_CURSOR, "HWcursor",     OPTV_BOOLEAN,   {0},    FALSE },
@@ -526,7 +524,6 @@ _X_EXPORT DriverRec vmware = {
 };
 
 
-#ifdef XFree86LOADER
 static MODULESETUPPROTO(vmwareSetup);
 
 _X_EXPORT XF86ModuleData vmwareModuleData = {
@@ -554,4 +551,3 @@ vmwareSetup(pointer module, pointer opts, int *errmaj, int *errmin)
     }
     return NULL;
 }
-#endif	/* XFree86LOADER */

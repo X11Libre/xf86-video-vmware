@@ -1628,11 +1628,9 @@ vmwlegacy_hookup(ScrnInfoPtr pScrn)
     pScrn->ValidMode = VMWAREValidMode;
 }
 
-#ifdef XFree86LOADER
 void
 VMWARERefSymLists(void)
 {
     LoaderRefSymLists(vgahwSymbols, fbSymbols, ramdacSymbols,
 		      shadowfbSymbols, NULL);
 }
-#endif	/* XFree86LOADER */
