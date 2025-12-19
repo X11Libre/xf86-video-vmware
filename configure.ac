@@ -72,7 +72,7 @@ XORG_DRIVER_CHECK_EXT(XINERAMA, xineramaproto)
 XORG_DRIVER_CHECK_EXT(XV, videoproto)
 
 # Obtain compiler/linker options for the driver dependencies
-PKG_CHECK_MODULES(XORG, [xorg-server >= 1.18 xproto fontsproto $REQUIRED_MODULES])
+PKG_CHECK_MODULES(XORG, [xorg-server >= 25.0.0 xproto fontsproto $REQUIRED_MODULES])
 
 # Obtain compiler/linker options for the vmwarectrl client tool
 PKG_CHECK_MODULES(X11, x11 xext)
