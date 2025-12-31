@@ -132,13 +132,6 @@ fi
 
 AM_CONDITIONAL(BUILD_VMWGFX, test "x$BUILD_VMWGFX" = xyes)
 
-AC_CONFIG_FILES([
-                Makefile
-                man/Makefile
-                saa/Makefile
-                vmwgfx/Makefile
-                src/Makefile
-                vmwarectrl/Makefile
-])
+AC_CONFIG_FILES([Makefile man/Makefile saa/Makefile vmwgfx/Makefile src/Makefile vmwarectrl/Makefile])
 
 AC_OUTPUT
