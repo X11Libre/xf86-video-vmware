@@ -269,8 +269,7 @@ crtc_shadow_allocate(xf86CrtcPtr crtc, int width, int height)
      * is used as scanout by a crtc.
      */
 
-    return pScreen->CreatePixmap(pScreen, width, height,
-				 rootpix->drawable.depth, 0);
+    return dixPixmapCreate(pScreen, width, height, rootpix->drawable.depth, 0);
 }
 
 static PixmapPtr
@@ -288,7 +287,7 @@ crtc_shadow_destroy(xf86CrtcPtr crtc, PixmapPtr rotate_pixmap, void *data)
         return;
 
     pScreen = rotate_pixmap->drawable.pScreen;
-    dixDestroyPixmap(rotate_pixmap, 0);
+    dixPixmapPut(rotate_pixmap);
 }
 
 

@@ -60,4 +60,41 @@
 
 #define XF86_SCRN_ARG(x) (x)
 
+#ifndef XORG_API_DIX_PIXMAP_LIFETIME
+static inline PixmapPtr dixPixmapCreate(ScreenPtr pScreen,
+                                         uint32_t width,
+                                         uint32_t height,
+                                         uint32_t depth,
+                                         uint32_t usage_hint)
+{
+    if (!pScreen) {
+        LogMessage(X_ERROR, "dixCreatePixmap() called on NULL screen\n");
+        return NULL;
+    }
+
+    if (!pScreen->CreatePixmap) {
+        LogMessage(X_ERROR, "dixCreatePixmap() screen->CreatePixmap is NULL\n");
+        return NULL;
+    }
+
+    return pScreen->CreatePixmap(pScreen, width, height, depth, usage_hint);
+}
+
+PixmapPtr dixPixmapGet(PixmapPtr pPixmap)
+{
+    if (pPixmap)
+        pPixmap->refcnt++;
+    return pPixmap;
+}
+
+void dixPixmapPut(PixmapPtr pPixmap)
+{
+    if (pPixmap)
+        dixDestroyPixmap(pPixmap, 0);
+}
+
+#else
+#include "dix_pixmap.h"
+#endif /* XORG_API_DIX_PIXMAP_LIFETIME */
+
 #endif
