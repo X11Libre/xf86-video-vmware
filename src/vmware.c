@@ -846,8 +846,8 @@ VMWAREModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode, Bool rebuildPixmap)
                                                          pScrn->pScreen->rootDepth),
                                            (pointer)(pVMWARE->FbBase + pScrn->fbOffset));
 
-        (*pScrn->EnableDisableFBAccess)(XF86_SCRN_ARG(pScrn), FALSE);
-        (*pScrn->EnableDisableFBAccess)(XF86_SCRN_ARG(pScrn), TRUE);
+        (*pScrn->EnableDisableFBAccess)(pScrn, FALSE);
+        (*pScrn->EnableDisableFBAccess)(pScrn, TRUE);
     }
 
     vgaHWProtect(pScrn, FALSE);
@@ -963,7 +963,7 @@ vmwareNextXineramaState(VMWAREPtr pVMWARE)
 }
 
 static void
-VMWAREAdjustFrame(ADJUST_FRAME_ARGS_DECL)
+VMWAREAdjustFrame(ScrnInfoPtr arg, int x, int y)
 {
     /* FIXME */
 }
@@ -1021,7 +1021,7 @@ VMWAREStopFIFO(ScrnInfoPtr pScrn)
 }
 
 static Bool
-VMWARECloseScreen(CLOSE_SCREEN_ARGS_DECL)
+VMWARECloseScreen(ScreenPtr pScreen)
 {
     ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
     VMWAREPtr pVMWARE = VMWAREPTR(pScrn);
@@ -1051,7 +1051,7 @@ VMWARECloseScreen(CLOSE_SCREEN_ARGS_DECL)
     pScrn->DriverFunc = NULL;
 #endif
 
-    return (*pScreen->CloseScreen)(CLOSE_SCREEN_ARGS);
+    return (*pScreen->CloseScreen)(pScreen);
 }
 
 static Bool
@@ -1230,7 +1230,7 @@ vmwareIsRegionEqual(const RegionPtr reg1,
 }
 
 static Bool
-VMWAREScreenInit(SCREEN_INIT_ARGS_DECL)
+VMWAREScreenInit(ScreenPtr pScreen, int argc, char **argv)
 {
     ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
     vgaHWPtr hwp;
@@ -1313,7 +1313,7 @@ VMWAREScreenInit(SCREEN_INIT_ARGS_DECL)
     VMWAREModeInit(pScrn, pScrn->currentMode, FALSE);
 
     /* Set the viewport if supported */
-    VMWAREAdjustFrame(ADJUST_FRAME_ARGS(pScrn, pScrn->frameX0, pScrn->frameY0));
+    VMWAREAdjustFrame(pScrn, pScrn->frameX0, pScrn->frameY0);
 
     /*
      * Setup the screen's visuals, and initialise the framebuffer
@@ -1513,9 +1513,8 @@ VMWAREScreenInit(SCREEN_INIT_ARGS_DECL)
 }
 
 static Bool
-VMWARESwitchMode(SWITCH_MODE_ARGS_DECL)
+VMWARESwitchMode(ScrnInfoPtr pScrn, DisplayModePtr mode)
 {
-    SCRN_INFO_PTR(arg);
     ScreenPtr pScreen = pScrn->pScreen;
 
     pScreen->mmWidth = (pScreen->width * VMWARE_INCHTOMM +
@@ -1527,9 +1526,8 @@ VMWARESwitchMode(SWITCH_MODE_ARGS_DECL)
 }
 
 static Bool
-VMWAREEnterVT(VT_FUNC_ARGS_DECL)
+VMWAREEnterVT(ScrnInfoPtr pScrn)
 {
-    SCRN_INFO_PTR(arg);
     VMWAREPtr pVMWARE = VMWAREPTR(pScrn);
 
     /*
@@ -1546,9 +1544,8 @@ VMWAREEnterVT(VT_FUNC_ARGS_DECL)
 }
 
 static void
-VMWARELeaveVT(VT_FUNC_ARGS_DECL)
+VMWARELeaveVT(ScrnInfoPtr pScrn)
 {
-    SCRN_INFO_PTR(arg);
     VMWAREPtr pVMWARE = VMWAREPTR(pScrn);
 
     /*
@@ -1561,9 +1558,8 @@ VMWARELeaveVT(VT_FUNC_ARGS_DECL)
 }
 
 static void
-VMWAREFreeScreen(FREE_SCREEN_ARGS_DECL)
+VMWAREFreeScreen(ScrnInfoPtr pScrn)
 {
-    SCRN_INFO_PTR(arg);
     /*
      * If the vgahw module is used vgaHWFreeHWRec() would be called
      * here.
@@ -1572,7 +1568,7 @@ VMWAREFreeScreen(FREE_SCREEN_ARGS_DECL)
 }
 
 static ModeStatus
-VMWAREValidMode(SCRN_ARG_TYPE arg, DisplayModePtr mode, Bool verbose, int flags)
+VMWAREValidMode(ScrnInfoPtr arg, DisplayModePtr mode, Bool verbose, int flags)
 {
     return MODE_OK;
 }
