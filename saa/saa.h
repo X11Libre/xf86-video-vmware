@@ -39,8 +39,6 @@
 #include <damage.h>
 #include <picturestr.h>
 
-#include "../src/compat-api.h"
-
 #define SAA_VERSION_MAJOR 0
 #define SAA_VERSION_MINOR 1
 
@@ -169,8 +167,7 @@ saa_create_gc(GCPtr pGC);
 extern _X_EXPORT RegionPtr
 saa_bitmap_to_region(PixmapPtr pPix);
 
-extern _X_EXPORT Bool
-saa_close_screen(CLOSE_SCREEN_ARGS_DECL);
+extern _X_EXPORT Bool saa_close_screen( ScreenPtr pScreen);
 
 extern _X_EXPORT Bool
 saa_gc_reads_destination(DrawablePtr pDrawable, GCPtr pGC);
