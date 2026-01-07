@@ -216,7 +216,7 @@ vmwgfx_video_free_comp(struct xorg_xv_port_priv *priv)
 }
 
 static void
-stop_video(ScrnInfoPtr pScrn, pointer data, Bool shutdown)
+stop_video(ScrnInfoPtr pScrn, void *data, Bool shutdown)
 {
    struct xorg_xv_port_priv *priv = (struct xorg_xv_port_priv *)data;
    int i, j;
@@ -250,7 +250,7 @@ stop_video(ScrnInfoPtr pScrn, pointer data, Bool shutdown)
 
 static int
 set_port_attribute(ScrnInfoPtr pScrn,
-                   Atom attribute, INT32 value, pointer data)
+                   Atom attribute, INT32 value, void *data)
 {
    struct xorg_xv_port_priv *priv = (struct xorg_xv_port_priv *)data;
 
@@ -295,7 +295,7 @@ set_port_attribute(ScrnInfoPtr pScrn,
 
 static int
 get_port_attribute(ScrnInfoPtr pScrn,
-                   Atom attribute, INT32 * value, pointer data)
+                   Atom attribute, INT32 * value, void *data)
 {
     struct xorg_xv_port_priv *priv = (struct xorg_xv_port_priv *)data;
 
@@ -318,7 +318,7 @@ query_best_size(ScrnInfoPtr pScrn,
                 Bool motion,
                 short vid_w, short vid_h,
                 short drw_w, short drw_h,
-                unsigned int *p_w, unsigned int *p_h, pointer data)
+                unsigned int *p_w, unsigned int *p_h, void *data)
 {
    if (vid_w > (drw_w << 1))
       drw_w = vid_w >> 1;
@@ -828,7 +828,7 @@ put_image(ScrnInfoPtr pScrn,
           short drw_w, short drw_h,
           int id, unsigned char *buf,
           short width, short height,
-          Bool sync, RegionPtr clipBoxes, pointer data,
+          Bool sync, RegionPtr clipBoxes, void *data,
           DrawablePtr pDraw)
 {
    struct xorg_xv_port_priv *pPriv = (struct xorg_xv_port_priv *) data;
@@ -981,7 +981,7 @@ xorg_setup_textured_adapter(ScreenPtr pScreen)
        struct xorg_xv_port_priv *priv =
 	  port_priv_create(ms->xat, xar, ms->fd);
 
-      adapt->pPortPrivates[i].ptr = (pointer) (priv);
+      adapt->pPortPrivates[i].ptr = priv;
       adapt->nPorts++;
    }
 

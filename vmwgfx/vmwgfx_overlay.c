@@ -196,21 +196,21 @@ static int vmw_xv_put_image(ScrnInfoPtr pScrn, short src_x, short src_y,
                             short drw_x, short drw_y, short src_w, short src_h,
                             short drw_w, short drw_h, int image,
                             unsigned char *buf, short width, short height,
-                            Bool sync, RegionPtr clipBoxes, pointer data,
+                            Bool sync, RegionPtr clipBoxes, void *data,
                             DrawablePtr dst);
-static void vmw_xv_stop_video(ScrnInfoPtr pScrn, pointer data, Bool Cleanup);
+static void vmw_xv_stop_video(ScrnInfoPtr pScrn, void *data, Bool Cleanup);
 static int vmw_xv_query_image_attributes(ScrnInfoPtr pScrn, int format,
                                          unsigned short *width,
                                          unsigned short *height, int *pitches,
                                          int *offsets);
 static int vmw_xv_set_port_attribute(ScrnInfoPtr pScrn, Atom attribute,
-                                     INT32 value, pointer data);
+                                     INT32 value, void *data);
 static int vmw_xv_get_port_attribute(ScrnInfoPtr pScrn, Atom attribute,
-                                     INT32 *value, pointer data);
+                                     INT32 *value, void *data);
 static void vmw_xv_query_best_size(ScrnInfoPtr pScrn, Bool motion,
                                 short vid_w, short vid_h, short drw_w,
                                 short drw_h, unsigned int *p_w,
-                                unsigned int *p_h, pointer data);
+                                unsigned int *p_h, void *data);
 
 
 /*
@@ -334,7 +334,7 @@ vmw_video_init_adaptor(ScrnInfoPtr pScrn)
 	struct vmwgfx_overlay_port *priv =
 	    vmwgfx_overlay_port_create(ms->fd, pScrn->pScreen);
 
-        adaptor->pPortPrivates[i].ptr = (pointer) priv;
+        adaptor->pPortPrivates[i].ptr = priv;
     }
 
     adaptor->nAttributes = VMWARE_VID_NUM_ATTRIBUTES;
@@ -666,7 +666,7 @@ vmw_xv_put_image(ScrnInfoPtr pScrn, short src_x, short src_y,
                  short drw_x, short drw_y, short src_w, short src_h,
                  short drw_w, short drw_h, int format,
                  unsigned char *buf, short width, short height,
-                 Bool sync, RegionPtr clipBoxes, pointer data,
+                 Bool sync, RegionPtr clipBoxes, void *data,
                  DrawablePtr dst)
 {
     struct vmwgfx_overlay_port *port = data;
@@ -701,7 +701,7 @@ vmw_xv_put_image(ScrnInfoPtr pScrn, short src_x, short src_y,
  */
 
 static void
-vmw_xv_stop_video(ScrnInfoPtr pScrn, pointer data, Bool cleanup)
+vmw_xv_stop_video(ScrnInfoPtr pScrn, void *data, Bool cleanup)
 {
     struct vmwgfx_overlay_port *port = data;
 
@@ -811,7 +811,7 @@ vmw_xv_query_image_attributes(ScrnInfoPtr pScrn, int format,
 
 static int
 vmw_xv_set_port_attribute(ScrnInfoPtr pScrn, Atom attribute,
-                          INT32 value, pointer data)
+                          INT32 value, void *data)
 {
     struct vmwgfx_overlay_port *port = data;
     Atom xvColorKey = MAKE_ATOM("XV_COLORKEY");
@@ -851,7 +851,7 @@ vmw_xv_set_port_attribute(ScrnInfoPtr pScrn, Atom attribute,
 
 static int
 vmw_xv_get_port_attribute(ScrnInfoPtr pScrn, Atom attribute,
-                          INT32 *value, pointer data)
+                          INT32 *value, void *data)
 {
     struct vmwgfx_overlay_port *port = data;
     Atom xvColorKey = MAKE_ATOM("XV_COLORKEY");
@@ -898,7 +898,7 @@ static void
 vmw_xv_query_best_size(ScrnInfoPtr pScrn, Bool motion,
                        short vid_w, short vid_h, short drw_w,
                        short drw_h, unsigned int *p_w,
-                       unsigned int *p_h, pointer data)
+                       unsigned int *p_h, void *data)
 {
     *p_w = (drw_w + 1) & ~1;
     *p_h = drw_h;

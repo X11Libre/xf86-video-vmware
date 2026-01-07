@@ -220,7 +220,7 @@ saa_check_composite(CARD8 op,
 
 extern Bool
 saa_modify_pixmap_header(PixmapPtr pPixmap, int width, int height, int depth,
-			 int bitsPerPixel, int devKind, pointer pPixData);
+			 int bitsPerPixel, int devKind, void *pPixData);
 
 extern PixmapPtr
 saa_create_pixmap(ScreenPtr pScreen, int w, int h, int depth,

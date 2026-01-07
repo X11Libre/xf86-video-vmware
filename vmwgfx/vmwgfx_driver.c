@@ -791,7 +791,7 @@ void xorg_flush(ScreenPtr pScreen)
     free(pixmaps);
 }
 
-static void drv_block_handler(ScreenPtr pScrn, pointer pTimeout)
+static void drv_block_handler(ScreenPtr pScrn, void *pTimeout)
 {
     modesettingPtr ms = modesettingPTR(xf86ScreenToScrn(pScreen));
 

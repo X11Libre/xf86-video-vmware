@@ -512,7 +512,7 @@ saa_check_poly_fill_rect(DrawablePtr pDrawable, GCPtr pGC,
 static void
 saa_check_image_glyph_blt(DrawablePtr pDrawable, GCPtr pGC,
 			  int x, int y, unsigned int nglyph,
-			  CharInfoPtr * ppci, pointer pglyphBase)
+			  CharInfoPtr * ppci, void *pglyphBase)
 {
     struct saa_gc_priv *sgc = saa_gc(pGC);
     saa_access_t access;
@@ -538,7 +538,7 @@ saa_check_image_glyph_blt(DrawablePtr pDrawable, GCPtr pGC,
 static void
 saa_check_poly_glyph_blt(DrawablePtr pDrawable, GCPtr pGC,
 			 int x, int y, unsigned int nglyph,
-			 CharInfoPtr * ppci, pointer pglyphBase)
+			 CharInfoPtr * ppci, void *pglyphBase)
 {
     struct saa_gc_priv *sgc = saa_gc(pGC);
     saa_access_t access;

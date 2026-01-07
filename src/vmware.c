@@ -844,7 +844,7 @@ VMWAREModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode, Bool rebuildPixmap)
                                            pScrn->bitsPerPixel,
                                            PixmapBytePad(pScrn->displayWidth,
                                                          pScrn->pScreen->rootDepth),
-                                           (pointer)(pVMWARE->FbBase + pScrn->fbOffset));
+                                           (pVMWARE->FbBase + pScrn->fbOffset));
 
         (*pScrn->EnableDisableFBAccess)(pScrn, FALSE);
         (*pScrn->EnableDisableFBAccess)(pScrn, TRUE);
