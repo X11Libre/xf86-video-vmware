@@ -304,7 +304,7 @@ VMWAREAvailableOptions(int chipid, int busid)
 static Bool
 VMWareDriverFunc(ScrnInfoPtr pScrn,
                  xorgDriverFuncOp op,
-                 pointer data)
+                 void *data)
 {
    uint32_t *flag;
    xorgRRModeMM *modemm;
@@ -375,8 +375,8 @@ _X_EXPORT XF86ModuleData vmwareModuleData = {
     NULL
 };
 
-static pointer
-vmwareSetup(pointer module, pointer opts, int *errmaj, int *errmin)
+static void*
+vmwareSetup(void *module, void *opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
 
@@ -387,7 +387,7 @@ vmwareSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 
         VMWARERefSymLists();
 
-        return (pointer)1;
+        return (void*)1;
     }
     if (errmaj) {
         *errmaj = LDR_ONCEONLY;

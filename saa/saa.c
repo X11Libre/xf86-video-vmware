@@ -478,7 +478,7 @@ saa_copy_gc(GCPtr pGCSrc, unsigned long mask, GCPtr pGCDst)
 }
 
 static void
-saa_change_clip(GCPtr pGC, int type, pointer pvalue, int nrects)
+saa_change_clip(GCPtr pGC, int type, void *pvalue, int nrects)
 {
     struct saa_gc_priv *sgc = saa_gc(pGC);
 

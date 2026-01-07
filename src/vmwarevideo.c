@@ -127,7 +127,7 @@ static XF86AttributeRec vmwareVideoAttributes[] =
  */
 typedef struct {
    uint32  dataOffset;
-   pointer data;
+   void   *data;
 } VMWAREVideoBuffer;
 
 typedef struct {
@@ -185,21 +185,21 @@ static int vmwareXvPutImage(ScrnInfoPtr pScrn, short src_x, short src_y,
                             short drw_x, short drw_y, short src_w, short src_h,
                             short drw_w, short drw_h, int image,
                             unsigned char *buf, short width, short height,
-                            Bool sync, RegionPtr clipBoxes, pointer data,
+                            Bool sync, RegionPtr clipBoxes, void *data,
                             DrawablePtr dst);
-static void vmwareStopVideo(ScrnInfoPtr pScrn, pointer data, Bool Cleanup);
+static void vmwareStopVideo(ScrnInfoPtr pScrn, void *data, Bool Cleanup);
 static int vmwareQueryImageAttributes(ScrnInfoPtr pScrn, int format,
                                       unsigned short *width,
                                       unsigned short *height, int *pitches,
                                       int *offsets);
 static int vmwareSetPortAttribute(ScrnInfoPtr pScrn, Atom attribute,
-                                  INT32 value, pointer data);
+                                  INT32 value, void *data);
 static int vmwareGetPortAttribute(ScrnInfoPtr pScrn, Atom attribute,
-                                  INT32 *value, pointer data);
+                                  INT32 *value, void *data);
 static void vmwareQueryBestSize(ScrnInfoPtr pScrn, Bool motion,
                                 short vid_w, short vid_h, short drw_w,
                                 short drw_h, unsigned int *p_w,
-                                unsigned int *p_h, pointer data);
+                                unsigned int *p_h, void *data);
 
 /*
  * Local functions for video streams
@@ -1063,7 +1063,7 @@ vmwareXvPutImage(ScrnInfoPtr pScrn, short src_x, short src_y,
                  short drw_x, short drw_y, short src_w, short src_h,
                  short drw_w, short drw_h, int format,
                  unsigned char *buf, short width, short height,
-                 Bool sync, RegionPtr clipBoxes, pointer data,
+                 Bool sync, RegionPtr clipBoxes, void *data,
                  DrawablePtr dst)
 {
     VMWAREPtr pVMWARE = VMWAREPTR(pScrn);
@@ -1101,7 +1101,7 @@ vmwareXvPutImage(ScrnInfoPtr pScrn, short src_x, short src_y,
  */
 
 static void
-vmwareStopVideo(ScrnInfoPtr pScrn, pointer data, Bool Cleanup)
+vmwareStopVideo(ScrnInfoPtr pScrn, void *data, Bool Cleanup)
 {
     VMWAREVideoPtr pVid = data;
     VMWAREPtr pVMWARE = VMWAREPTR(pScrn);
@@ -1224,7 +1224,7 @@ vmwareQueryImageAttributes(ScrnInfoPtr pScrn, int format,
 
 static int
 vmwareSetPortAttribute(ScrnInfoPtr pScrn, Atom attribute,
-                       INT32 value, pointer data)
+                       INT32 value, void *data)
 {
     VMWAREVideoPtr pVid = (VMWAREVideoPtr) data;
     Atom xvColorKey = MAKE_ATOM("XV_COLORKEY");
@@ -1264,7 +1264,7 @@ vmwareSetPortAttribute(ScrnInfoPtr pScrn, Atom attribute,
 
 static int
 vmwareGetPortAttribute(ScrnInfoPtr pScrn, Atom attribute,
-                       INT32 *value, pointer data)
+                       INT32 *value, void *data)
 {
     VMWAREVideoPtr pVid = (VMWAREVideoPtr) data;
     Atom xvColorKey = MAKE_ATOM("XV_COLORKEY");
@@ -1311,7 +1311,7 @@ static void
 vmwareQueryBestSize(ScrnInfoPtr pScrn, Bool motion,
                     short vid_w, short vid_h, short drw_w,
                     short drw_h, unsigned int *p_w,
-                    unsigned int *p_h, pointer data)
+                    unsigned int *p_h, void *data)
 {
     *p_w = (drw_w + 1) & ~1;
     *p_h = drw_h;

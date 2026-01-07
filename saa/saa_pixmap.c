@@ -149,7 +149,7 @@ saa_destroy_pixmap(PixmapPtr pPixmap)
 
 Bool
 saa_modify_pixmap_header(PixmapPtr pPixmap, int width, int height, int depth,
-			 int bitsPerPixel, int devKind, pointer pPixData)
+			 int bitsPerPixel, int devKind, void *pPixData)
 {
     ScreenPtr pScreen;
     struct saa_screen_priv *sscreen;
