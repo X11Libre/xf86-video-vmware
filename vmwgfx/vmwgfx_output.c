@@ -355,7 +355,6 @@ output_mode_valid(xf86OutputPtr output, DisplayModePtr pMode)
     return MODE_OK;
 }
 
-#ifdef RANDR_12_INTERFACE
 static Bool
 output_set_property(xf86OutputPtr output, Atom property, RRPropertyValuePtr value)
 {
@@ -406,7 +405,6 @@ output_set_property(xf86OutputPtr output, Atom property, RRPropertyValuePtr valu
 
     return TRUE;
 }
-#endif /* RANDR_12_INTERFACE */
 
 /**
  * vmwgfx_output_property_scan - Update a single property on a single output
@@ -503,9 +501,7 @@ output_destroy(xf86OutputPtr output)
 
 static const xf86OutputFuncsRec output_funcs = {
     .create_resources = output_create_resources,
-#ifdef RANDR_12_INTERFACE
     .set_property = output_set_property,
-#endif
 #ifdef RANDR_13_INTERFACE
     .get_property = output_get_property,
 #endif

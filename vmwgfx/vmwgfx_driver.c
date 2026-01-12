@@ -976,11 +976,9 @@ static void drv_load_palette(ScrnInfoPtr pScrn, int numColors,
 	xf86CrtcPtr crtc = xf86_config->crtc[c];
 
 	/* Make the change through RandR */
-#ifdef RANDR_12_INTERFACE
 	if (crtc->randr_crtc)
 	    RRCrtcGammaSet(crtc->randr_crtc, ms->lut_r, ms->lut_g, ms->lut_b);
 	else
-#endif
 	    crtc->funcs->gamma_set(crtc, ms->lut_r, ms->lut_g, ms->lut_b, 256);
     }
 }

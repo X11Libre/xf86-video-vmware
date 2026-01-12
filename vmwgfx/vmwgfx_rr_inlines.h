@@ -62,11 +62,7 @@ vmwgfx_notify_rr(ScreenPtr pScreen)
      */
     pScrPriv->lastSetTime = currentTime;
     pScrPriv->lastConfigTime = currentTime;
-#ifdef RANDR_12_INTERFACE
     xf86RandR12TellChanged(pScreen);
-#else
-    RRTellChanged(pScreen);
-#endif
 }
 
 /**
