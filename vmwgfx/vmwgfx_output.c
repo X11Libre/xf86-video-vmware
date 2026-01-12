@@ -424,7 +424,6 @@ vmwgfx_output_property_scan(xf86OutputPtr output,
     uint32_t value = vmwgfx_output->drm_connector->prop_values[p->index];
     int err = 0;
 
-#ifdef RANDR_13_INTERFACE
     if (p->mode_prop->flags & DRM_MODE_PROP_RANGE) {
 	err = RRChangeOutputProperty(output->randr_output,
 				     p->atoms[0], XA_INTEGER, 32,
@@ -444,14 +443,12 @@ vmwgfx_output_property_scan(xf86OutputPtr output,
 				     &p->atoms[j+1], value != p->value,
 				     FALSE);
     }
-#endif /* RANDR_13_INTERFACE */
     if (!err)
 	p->value = value;
 
     return !err;
 }
 
-#ifdef RANDR_13_INTERFACE
 static Bool
 output_get_property(xf86OutputPtr output, Atom property)
 {
@@ -480,7 +477,6 @@ output_get_property(xf86OutputPtr output, Atom property)
 
     return FALSE;
 }
-#endif /* RANDR_13_INTERFACE */
 
 static void
 output_destroy(xf86OutputPtr output)
@@ -502,12 +498,9 @@ output_destroy(xf86OutputPtr output)
 static const xf86OutputFuncsRec output_funcs = {
     .create_resources = output_create_resources,
     .set_property = output_set_property,
-#ifdef RANDR_13_INTERFACE
     .get_property = output_get_property,
-#endif
     .dpms = output_dpms,
     .detect = output_detect,
-
     .get_modes = output_get_modes,
     .mode_valid = output_mode_valid,
     .destroy = output_destroy,
