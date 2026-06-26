@@ -45,6 +45,7 @@
 #include "wsbm_util.h"
 #include <unistd.h>
 #include "vmwgfx_hosted.h"
+#include "common_compat.h"
 
 #define VMWGFX_FD_PATH_LEN 80
 
@@ -422,7 +423,7 @@ xorg_dri2_init(ScreenPtr pScreen)
 	minor = 0;
     }
 
-    dri2info.version = min(DRI2INFOREC_VERSION, 3);
+    dri2info.version = MIN(DRI2INFOREC_VERSION, 3);
     dri2info.fd = ms->fd;
     dri2info.driverName = "vmwgfx";
 
