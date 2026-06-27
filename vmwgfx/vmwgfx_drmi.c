@@ -79,7 +79,7 @@ vmwgfx_present_readback(int drm_fd, uint32_t fb_id, RegionPtr region)
 {
     BoxPtr clips = REGION_RECTS(region);
     unsigned int num_clips = REGION_NUM_RECTS(region);
-    unsigned int alloc_clips = min(num_clips, DRM_MODE_FB_DIRTY_MAX_CLIPS);
+    unsigned int alloc_clips = MIN(num_clips, DRM_MODE_FB_DIRTY_MAX_CLIPS);
     struct drm_vmw_fence_rep rep;
     struct drm_vmw_present_readback_arg arg;
     int ret;
@@ -97,7 +97,7 @@ vmwgfx_present_readback(int drm_fd, uint32_t fb_id, RegionPtr region)
     }
 
     while (num_clips > 0) {
-	unsigned int cur_clips = min(num_clips, DRM_MODE_FB_DIRTY_MAX_CLIPS);
+	unsigned int cur_clips = MIN(num_clips, DRM_MODE_FB_DIRTY_MAX_CLIPS);
 
 	memset(&arg, 0, sizeof(arg));
 	memset(&rep, 0, sizeof(rep));
@@ -149,7 +149,7 @@ vmwgfx_present(int drm_fd, uint32_t fb_id, unsigned int dst_x,
 {
     BoxPtr clips = REGION_RECTS(region);
     unsigned int num_clips = REGION_NUM_RECTS(region);
-    unsigned int alloc_clips = min(num_clips, DRM_MODE_FB_DIRTY_MAX_CLIPS);
+    unsigned int alloc_clips = MIN(num_clips, DRM_MODE_FB_DIRTY_MAX_CLIPS);
     struct drm_vmw_present_arg arg;
     unsigned int i;
     struct drm_vmw_rect *rects, *r;
@@ -166,7 +166,7 @@ vmwgfx_present(int drm_fd, uint32_t fb_id, unsigned int dst_x,
     }
 
     while (num_clips > 0) {
-	unsigned int cur_clips = min(num_clips, DRM_MODE_FB_DIRTY_MAX_CLIPS);
+	unsigned int cur_clips = MIN(num_clips, DRM_MODE_FB_DIRTY_MAX_CLIPS);
 
 	memset(&arg, 0, sizeof(arg));
 	memset(rects, 0, alloc_clips * sizeof(*rects));
@@ -330,7 +330,7 @@ vmwgfx_dma(int host_x, int host_y,
 	unsigned int size;
 	unsigned int cur_clips;
 
-	cur_clips = min(num_clips, max_clips);
+	cur_clips = MIN(num_clips, max_clips);
 	size = sizeof(*cmd) + (cur_clips - 1) * sizeof(cmd->cb) +
 	    sizeof(*suffix);
 

@@ -152,10 +152,10 @@ vmwgfx_layout_from_kms(ScrnInfoPtr pScrn)
 	vmwgfx_output_origin(output, &box->x, &box->y);
 	box->width = output->probed_modes->HDisplay;
 	box->height = output->probed_modes->VDisplay;
-	min_x = min(min_x, box->x);
-	min_y = min(min_y, box->y);
-	max_x = max(max_x, box->x + box->width);
-	max_y = max(max_y, box->y + box->height);
+	min_x = MIN(min_x, box->x);
+	min_y = MIN(min_y, box->y);
+	max_x = MAX(max_x, box->x + box->width);
+	max_y = MAX(max_y, box->y + box->height);
     }
 
     layout->root_width = max_x;

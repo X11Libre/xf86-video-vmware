@@ -808,8 +808,8 @@ VMWAREModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode, Bool rebuildPixmap)
     if (pVMWARE->vmwareCapability & SVGA_CAP_PITCHLOCK)
 	vmwareWriteReg(pVMWARE, SVGA_REG_PITCHLOCK, 0);
     vmwareReg->svga_reg_enable = 1;
-    vmwareReg->svga_reg_width = max(mode->HDisplay, pScrn->virtualX);
-    vmwareReg->svga_reg_height = max(mode->VDisplay, pScrn->virtualY);
+    vmwareReg->svga_reg_width = MAX(mode->HDisplay, pScrn->virtualX);
+    vmwareReg->svga_reg_height = MAX(mode->VDisplay, pScrn->virtualY);
     vmwareReg->svga_reg_bits_per_pixel = pVMWARE->bitsPerPixel;
 
     vgaHWProtect(pScrn, TRUE);

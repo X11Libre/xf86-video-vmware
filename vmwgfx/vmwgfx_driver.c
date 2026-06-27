@@ -646,7 +646,7 @@ vmwgfx_scanout_update(int drm_fd, int fb_id, RegionPtr dirty)
 {
     BoxPtr clips = REGION_RECTS(dirty);
     unsigned int num_clips = REGION_NUM_RECTS(dirty);
-    unsigned int alloc_clips = min(num_clips, DRM_MODE_FB_DIRTY_MAX_CLIPS);
+    unsigned int alloc_clips = MIN(num_clips, DRM_MODE_FB_DIRTY_MAX_CLIPS);
     drmModeClip *rects, *r;
     int i, ret;
 
@@ -660,7 +660,7 @@ vmwgfx_scanout_update(int drm_fd, int fb_id, RegionPtr dirty)
     }
 
     while (num_clips > 0) {
-	unsigned int cur_clips = min(num_clips, DRM_MODE_FB_DIRTY_MAX_CLIPS);
+	unsigned int cur_clips = MIN(num_clips, DRM_MODE_FB_DIRTY_MAX_CLIPS);
 
 	memset(rects, 0, alloc_clips * sizeof(*rects));
 
