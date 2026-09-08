@@ -791,12 +791,12 @@ void xorg_flush(ScreenPtr pScreen)
     free(pixmaps);
 }
 
-static void drv_block_handler(ScreenPtr pScrn, void *pTimeout)
+static void drv_block_handler(ScreenPtr pScreen, void *pTimeout)
 {
     modesettingPtr ms = modesettingPTR(xf86ScreenToScrn(pScreen));
 
     vmwgfx_swap(ms, pScreen, BlockHandler);
-    pScreen->BlockHandler(arg, pTimeout);
+    pScreen->BlockHandler(pScreen, pTimeout);
     vmwgfx_swap(ms, pScreen, BlockHandler);
 
     if (vmwgfx_is_hosted(ms->hdriver))
