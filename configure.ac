@@ -70,6 +70,9 @@ XORG_DRIVER_CHECK_EXT(DPMSExtension, xextproto)
 XORG_DRIVER_CHECK_EXT(XINERAMA, xineramaproto)
 XORG_DRIVER_CHECK_EXT(XV, videoproto)
 
+# Enable vmwgfx by default
+BUILD_VMWGFX=yes
+
 # Obtain compiler/linker options for the driver dependencies
 PKG_CHECK_MODULES(XORG, [xorg-server >= 25.0.0 xproto fontsproto $REQUIRED_MODULES])
 
@@ -79,9 +82,8 @@ PKG_CHECK_MODULES([PCIACCESS], [pciaccess >= 0.8.0])
 
 AC_SUBST([moduledir])
 
-if test x$BUILD_VMWGFX = xyes; then
-	PKG_CHECK_MODULES([LIBDRM], [libdrm],[],[BUILD_VMWGFX=no])
-fi
+PKG_CHECK_MODULES([LIBDRM], [libdrm],[],[BUILD_VMWGFX=no])
+
 if test x$BUILD_VMWGFX = xyes; then
 #
 # Early versions of mesa 10 forgot to bump the XA major version number in
