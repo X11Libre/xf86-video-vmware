@@ -56,6 +56,7 @@
 #define VMWARE_VERSION_MAJOR PACKAGE_VERSION_MAJOR
 #define VMWARE_VERSION_MINOR PACKAGE_VERSION_MINOR
 #define VMWARE_VERSION_PATCH PACKAGE_VERSION_PATCHLEVEL
+#define VMWARE_VERSION_SUFFIX PACKAGE_VERSION_SUFFIX
 
 static char vmware_driver_name[] = VMWARE_DRIVER_NAME;
 
@@ -377,6 +378,10 @@ _X_EXPORT XF86ModuleData vmwareModuleData = {
     vmwareSetup,
     NULL
 };
+
+#ifdef XF86_MODULE_VERSION_SUFFIX
+XF86_MODULE_VERSION_SUFFIX(vmware, VMWARE_VERSION_SUFFIX);
+#endif
 
 static void*
 vmwareSetup(void *module, void *opts, int *errmaj, int *errmin)
