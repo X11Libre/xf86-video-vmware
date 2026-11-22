@@ -369,7 +369,7 @@ vmwgfx_hw_commit(PixmapPtr pixmap)
 					0,
 					xa_type_other,
 					vpix->staging_format,
-					new_flags, 1) != XA_ERR_NONE)
+					new_flags, 1))
 	    return FALSE;
 	vpix->xa_flags = new_flags;
     } else if (!vmwgfx_create_hw(vsaa, pixmap, FALSE))
