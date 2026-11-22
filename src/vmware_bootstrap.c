@@ -33,9 +33,34 @@
 #include "vm_device_version.h"
 #include "vmware_bootstrap.h"
 #include <stdint.h>
+#include <stdio.h>
+#include <unistd.h>
 
 #ifdef XSERVER_PLATFORM_BUS
 #include "xf86platformBus.h"
+#endif
+
+#ifndef BUILD_VMWGFX
+/*
+ * Without vmwgfx only the legacy path is built, which can't run while a
+ * kernel KMS driver (vmwgfx) owns the device; leave it to modesetting then.
+ * Linux shows a bound KMS driver as a drm directory in sysfs.
+ */
+static Bool
+vmware_kms_driver_bound(struct pci_device *device)
+{
+#ifdef __linux__
+    char path[64];
+
+    snprintf(path, sizeof(path), "/sys/bus/pci/devices/%04x:%02x:%02x.%u/drm",
+             (unsigned int)device->domain, device->bus, device->dev,
+             device->func);
+    return access(path, F_OK) == 0;
+#else
+    (void)device;
+    return FALSE;
+#endif
+}
 #endif
 
 #ifdef HaveDriverFuncs
@@ -224,6 +249,14 @@ VMwarePciProbe (DriverPtr           drv,
 {
     ScrnInfoPtr     scrn = NULL;
 
+#ifndef BUILD_VMWGFX
+    if (vmware_kms_driver_bound(device)) {
+        xf86MsgVerb(X_INFO, 1, "VMwarePciProbe: a kernel KMS driver owns the "
+                    "device and vmwgfx isn't built, leaving it to modesetting\n");
+        return FALSE;
+    }
+#endif
+
     scrn = xf86ConfigPciEntity(scrn, 0, entity_num, VMWAREPciChipsets,
                                NULL, NULL, NULL, NULL, NULL);
     if (scrn != NULL) {
@@ -263,6 +296,14 @@ VMwarePlatformProbe(DriverPtr drv, int entity, int flags,
 
     if (!dev->pdev)
         return FALSE;
+
+#ifndef BUILD_VMWGFX
+    if (vmware_kms_driver_bound(dev->pdev)) {
+        xf86MsgVerb(X_INFO, 1, "VMwarePlatformProbe: a kernel KMS driver owns "
+                    "the device and vmwgfx isn't built, leaving it to modesetting\n");
+        return FALSE;
+    }
+#endif
 
     if (flags & PLATFORM_PROBE_GPU_SCREEN)
         scrnFlag = XF86_ALLOCATE_GPU_SCREEN;
