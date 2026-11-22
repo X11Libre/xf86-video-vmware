@@ -85,7 +85,7 @@ PKG_CHECK_MODULES([PCIACCESS], [pciaccess >= 0.8.0])
 AC_SUBST([moduledir])
 
 if test x$BUILD_VMWGFX = xyes; then
-	PKG_CHECK_MODULES([LIBDRM], [libdrm],[],[BUILD_VMWGFX=no])
+	PKG_CHECK_MODULES([LIBDRM], [libdrm >= 2.4.104],[],[BUILD_VMWGFX=no])
 fi
 if test x$BUILD_VMWGFX = xyes; then
 #

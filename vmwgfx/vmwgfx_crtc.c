@@ -280,12 +280,9 @@ crtc_shadow_create(xf86CrtcPtr crtc, void *data, int width, int height)
 static void
 crtc_shadow_destroy(xf86CrtcPtr crtc, PixmapPtr rotate_pixmap, void *data)
 {
-    ScreenPtr pScreen;
-
     if (rotate_pixmap == NULL)
         return;
 
-    pScreen = rotate_pixmap->drawable.pScreen;
     dixDestroyPixmap(rotate_pixmap, 0);
 }
 

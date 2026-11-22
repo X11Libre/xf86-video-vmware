@@ -247,12 +247,6 @@ saa_add_damage(PixmapPtr pixmap)
     return TRUE;
 }
 
-static inline RegionPtr
-saa_pix_damage_region(struct saa_pixmap *spix)
-{
-    return (spix->damage ? DamageRegion(spix->damage) : NULL);
-}
-
 Bool
 saa_pad_read(DrawablePtr draw)
 {

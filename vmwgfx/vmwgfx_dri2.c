@@ -226,7 +226,6 @@ dri2_do_destroy_buffer(DrawablePtr pDraw, DRI2BufferPtr buffer)
 {
     BufferPrivatePtr private = buffer->driverPrivate;
     struct xa_surface *srf = private->srf;
-    ScreenPtr pScreen = pDraw->pScreen;
     struct vmwgfx_saa_pixmap *vpix = vmwgfx_saa_pixmap(private->pPixmap);
 
     if (--private->refcount == 0 && srf) {
